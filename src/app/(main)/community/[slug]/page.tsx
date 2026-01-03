@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 
-import { PostCard } from '../../../components/PostCard';
+import { PostCard } from '@/src/components/PostCard';
 
 const COMMUNITY_POSTS = [
   {
