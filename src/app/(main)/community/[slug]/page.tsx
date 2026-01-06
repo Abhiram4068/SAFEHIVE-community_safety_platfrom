@@ -1,7 +1,6 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-
 import { PostCard } from '@/src/components/PostCard';
 
 const COMMUNITY_POSTS = [
@@ -14,15 +13,6 @@ const COMMUNITY_POSTS = [
     votes: "3.1k",
     commentsCount: "89",
     accentColor: "bg-orange-600"
-  },
-  {
-    subreddit: "todayilearned",
-    author: "Benjamin Clark",
-    time: "a year ago",
-    title: "TIL that Dan Spitz, lead guitarist for Anthrax, left the band to become a watchmaker",
-    votes: "1.2k",
-    commentsCount: "45",
-    accentColor: "bg-orange-600"
   }
 ];
 
@@ -30,41 +20,41 @@ export default function CommunityPage() {
   const params = useParams();
   const slug = params.slug as string;
 
+
   return (
-    <div className="bg-[#0B0D10] text-[#D1D5DB] min-h-screen antialiased">
-     
-      {/* COMMUNITY HEADER SECTION */}
-      
-     
-      
-      {/* MAIN CONTENT AREA */}
-      <main className="max-w-[1400px] mx-auto flex justify-center pt-6 px-12 gap-8">
-        
-        {/* Left Sidebar */}
-        <div className="hidden lg:block w-64 flex-shrink-0">
-          
-        </div>
-
-        {/* Feed */}
-        <div className="flex-1 max-w-[740px]">
-          <div className="flex gap-6 mb-6 px-2 border-b border-[#1F2228] pb-3">
-            <button className="text-white font-bold text-sm border-b-2 border-white pb-3 -mb-[13px]">Card</button>
-            <button className="text-[#838891] hover:text-white font-bold text-sm transition">Compact</button>
+    <div className="flex-1 max-w-[740px] mx-auto">
+      {/* 1. COMMUNITY HEADER SECTION */}
+      <div className="mb-6 rounded-xl overflow-hidden border border-[#1F2228] bg-[#0B0D10]">
+        <div className="h-32 w-full bg-gradient-to-r from-orange-500 to-red-600 opacity-80" />
+        <div className="px-4 pb-4 flex items-end gap-4 -mt-8">
+          <div className="w-20 h-20 rounded-2xl bg-orange-600 border-4 border-[#0B0D10] flex items-center justify-center text-3xl shadow-xl">
+            <span className="text-white font-bold">r/</span>
           </div>
-
-          <div className="flex flex-col w-full">
-            {COMMUNITY_POSTS.map((post, index) => (
-              <PostCard key={index} {...post} />
-            ))}
+          <div className="flex-1 mb-1">
+            <h1 className="text-2xl font-bold text-white leading-tight">r/{slug}</h1>
+            <p className="text-sm text-[#838891]">Everything about {slug}</p>
           </div>
+          <button className="bg-white text-black px-6 py-1.5 rounded-full text-sm font-bold hover:bg-gray-200 transition mb-1">
+            Info
+          </button>
+          <button className="bg-white text-black px-6 py-1.5 rounded-full text-sm font-bold hover:bg-gray-200 transition mb-1">
+            Leave 
+          </button>
         </div>
+      </div>
 
-        {/* Right Sidebar */}
-        <div className="hidden xl:block w-80 flex-shrink-0">
-         
-        </div>
-        
-      </main>
+      {/* 2. FEED SECTION */}
+      <div className="flex gap-6 mb-6 px-2 border-b border-[#1F2228] pb-3">
+        <button className="text-white font-bold text-sm border-b-2 border-white pb-3 -mb-[13px]">All</button>        
+        <button className="text-[#838891] hover:text-white font-bold text-sm transition">Posts</button>
+        <button className="text-[#838891] hover:text-white font-bold text-sm transition">Announcements</button>
+      </div>
+
+      <div className="flex flex-col w-full">
+        {COMMUNITY_POSTS.map((post, index) => (
+          <PostCard key={index} {...post} />
+        ))}
+      </div>
     </div>
   );
 }
