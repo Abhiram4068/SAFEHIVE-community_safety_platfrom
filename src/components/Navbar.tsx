@@ -40,12 +40,12 @@ export const Navbar = ({ user }: NavbarProps) => {
         {/* Brand Section */}
         <div className="flex items-center gap-3 w-1/4">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 bg-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-900/20 group-hover:bg-orange-500 transition-colors">
+            {/* <div className="w-9 h-9 bg-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-900/20 group-hover:bg-orange-500 transition-colors">
               <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a8 8 0 100 16 8 8 0 000-16z" />
               </svg>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">Reddify</span>
+            </div> */}
+            <span className="text-xl font-bold tracking-tight text-white">Safehive</span>
           </Link>
         </div>
 

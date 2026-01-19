@@ -7,10 +7,14 @@ import {
   Loader2, Search, Bookmark, ExternalLink, 
   X, MessageSquare, ArrowBigUp, CheckCircle 
 } from "lucide-react";
-
+import { Montserrat } from 'next/font/google';
 const POST_SERVICE_URL = "http://127.0.0.1:8000";
 const MEDIA_SERVICE_URL = "http://127.0.0.1:8006";
-
+const montserrat = Montserrat({ 
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-montserrat',
+});
 export default function Home() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,7 +128,17 @@ export default function Home() {
           />
         </div>
       </div>
-
+ <div className={`max-w-xl mx-auto mb-8 px-2 text-center ${montserrat.className}`}>
+        <p className="text-[#838891] text-sm tracking-wide">
+          You are seeing all reported issues.{" "}
+          <a href="/login/">
+            <button className="text-blue-500 hover:underline font-bold">
+              LOGIN
+            </button>
+          </a>
+          {" "}to see nearby issues.
+        </p>
+      </div>
       {/* Feed List */}
       <div className="flex flex-col gap-4">
         {loading ? (

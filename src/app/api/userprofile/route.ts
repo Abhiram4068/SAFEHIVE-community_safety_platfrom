@@ -12,11 +12,7 @@ export async function GET(){
             );
         }
     try{
-        
-
-       
-
-        const res = await axios.get(`http://127.0.0.1:8012/api/profile/me/`,
+         const res = await axios.get(`http://127.0.0.1:8012/api/profile/me/`,
            {
         headers: {
           Authorization: `Bearer ${access}`,

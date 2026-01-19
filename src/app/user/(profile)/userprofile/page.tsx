@@ -149,14 +149,21 @@ const ReddifyProfile = () => {
                 )}
               </div>
               <div className="flex gap-2 mb-2">
-                <button className="bg-white text-black font-bold px-6 py-2 rounded-full text-sm hover:bg-gray-200 transition-colors">Edit Profile</button>
+                <a href="editprofile/">
+                  <button className="bg-white text-black font-bold px-6 py-2 rounded-full text-sm hover:bg-gray-200 transition-colors">Edit Profile</button>
+                </a>
                 <button className="p-2 bg-[#1A1C1E] border border-[#343536] rounded-full text-gray-400 hover:text-white transition-colors">
                   <Settings size={20} />
                 </button>
               </div>
             </div>
-            <h1 className="text-3xl font-black">{profile.full_name || profile.username || "user"}</h1>
-            <p className="text-gray-500 font-medium tracking-tight text-lg leading-none mt-1">u/{profile.display_name}</p>
+            {/* <h1 className="text-3xl font-black">{profile.full_name || profile.username || "user"}</h1> */}
+            <p className="text-gray-300 text-base font-bold tracking-tight mt-1">
+  u/{profile.display_name}
+</p>
+<p className="text-gray-400 text-xs uppercase tracking-widest mt-2">
+  {profile.bio}
+</p>
           </div>
         </div>
 
