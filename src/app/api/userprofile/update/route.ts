@@ -1,18 +1,23 @@
-import { Cookie } from "next/font/google";
-import { NextResponse } from "next/server";
-import axios from "axios";
-import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function PUT(){
-    const cookieStore = await cookies();
-    const access = cookieStore.get('access')?.value;
-    if(!access){
-        return NextResponse.json(
-            {error:"Unauthorized"},
-            {status:401}
-        );
-    }
-    try{
+export async function PATCH(request: NextRequest) {
+  try {
+    const formData = await request.formData();
 
-    }
+    // REPLACE THIS URL with your actual Django/Backend URL
+    const BACKEND_URL = "http://127.0.0.1:8012/api/user/profile/update/";
+
+    const backendResponse = await fetch(BACKEND_URL, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': request.headers.get('Authorization') || '',
+      },
+      body: formData, // Sending the file to the backend
+    });
+
+    const data = await backendResponse.json();
+    return NextResponse.json(data, { status: backendResponse.status });
+  } catch (error) {
+    return NextResponse.json({ error: "Server Error" }, { status: 500 });
+  }
 }

@@ -187,10 +187,13 @@ export default function Home() {
             </div>
             <PostCard
               subreddit={post.category_name || "Community"}
-              author={`User_${post.user_id}`}
+              author={post.display_name}
               time={new Date(post.created_at).toLocaleDateString()}
               title={post.title}
               content={post.caption}
+              location={post.location_name || 'Global'}              
+              latitude={post.latitude}
+              longitude={post.longitude}
               imageUrl={post.media?.[0]?.displayUrl || null}
               votes={post.vote_count || 0}
               commentsCount={post.comment_count || 0}
@@ -266,7 +269,20 @@ export default function Home() {
                   <span className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest ${selectedPost?.priority === "high" ? "bg-red-500/10 text-red-500 border border-red-500/20" : "bg-blue-500/10 text-blue-400 border border-blue-500/20"}`}>
                     {selectedPost?.priority || "Normal"} Priority
                   </span>
+                  <div className="flex flex-col leading-tight mr-2">
+    <span className="text-blue-500 font-bold text-xs flex items-center gap-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+      {selectedPost.location_name || "Unknown Location"}
+    </span>
+    <span className="text-[9px] font-mono opacity-60 ml-4">
+      {selectedPost.latitude?.toFixed(4)}°, {selectedPost.longitude?.toFixed(4)}°
+    </span>
+  </div>
                 </div>
+
+                
 
                 <h1 className="text-3xl font-extrabold mb-4 text-white">{selectedPost?.title}</h1>
                 <p className="text-gray-300 mb-8">{selectedPost?.caption}</p>

@@ -16,6 +16,8 @@ interface PostProps {
   author: string;
   time: string;
   location?: string;  
+  latitude:string,
+  longitude:string,
   locationdistance: string;  
   title: string;
   content?: string;
@@ -33,6 +35,8 @@ export const PostCard = ({
   location,
   locationdistance,
   title, 
+  latitude,
+  longitude,
   content, 
   imageUrl, 
   votes, 
@@ -74,11 +78,29 @@ export const PostCard = ({
           <div className={`w-5 h-5 rounded-full border border-[#1F2228] ${accentColor}`}></div>
           <span className="font-bold text-gray-300">c/{subreddit}</span>
           <span>•</span>
-          <span>Posted by u/{author}</span>
+        <span>Posted by u/{author || "anonymous"}</span>
           <span>•</span>
           <span>{time}</span>
-          {/* ... Location UI remains same ... */}
-        </div>
+          {/* Replaced the second time/dot with Location UI */}
+{/* Updated Location Section */}
+  <span className="flex items-center gap-1 text-blue-500">
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="12" 
+      height="12" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor"  /* Changed to currentColor to match text-blue-500 */
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+      <circle cx="12" cy="10" r="3"/>
+    </svg>
+    <span className="font-medium">{location}</span>
+  </span>
+</div>
         
         
         
@@ -93,15 +115,7 @@ export const PostCard = ({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-[#1A1D23] rounded-full text-[#838891] font-bold text-xs border border-[#1F2228]">
-            <button className="p-2 hover:bg-gray-700 hover:text-orange-500 rounded-l-full transition border-r border-[#1F2228]">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-            </button>
-            <span className="px-2 text-white">{votes}</span>
-            <button className="p-2 hover:bg-gray-700 hover:text-blue-500 rounded-r-full transition border-l border-[#1F2228]">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-            </button>
-          </div>
+         
           
           <button 
             onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
