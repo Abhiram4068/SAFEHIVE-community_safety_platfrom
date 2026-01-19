@@ -21,6 +21,7 @@ interface UserProfile {
   display_name: string;
   bio?: string;
   profile_image?: string;
+   banner_color?: string;  
   created_at: string;
 }
 
@@ -138,7 +139,10 @@ const ReddifyProfile = () => {
       <div className="flex-1 min-w-0 space-y-6 order-2 lg:order-1">
         {/* PROFILE HEADER */}
         <div className="bg-[#0B0D10] border border-[#1F2228] rounded-2xl overflow-hidden shadow-2xl">
-          <div className="h-40 bg-gradient-to-r from-indigo-600 to-purple-700 w-full" />
+          <div
+  className="h-40 w-full"
+  style={{ backgroundColor: profile.banner_color ?? "#4f46e5" }}
+/>
           <div className="px-8 pb-8">
             <div className="flex justify-between items-end -mt-12 mb-6">
               <div className="w-32 h-32 bg-[#1A1A1B] rounded-3xl border-[6px] border-[#0B0D10] shadow-2xl overflow-hidden">

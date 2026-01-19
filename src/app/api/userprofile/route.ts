@@ -19,7 +19,7 @@ export async function GET(){
         },
       }
         );
-        // console.log(res.data);
+        console.log(res.data);
         return NextResponse.json(res.data);
 
   } catch (error) {
