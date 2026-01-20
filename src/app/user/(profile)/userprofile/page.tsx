@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Settings, Calendar, Info, ChevronRight, MessageSquare,
-  ArrowBigUp, MoreVertical, Trash2, X, AlertTriangle, Bookmark
+  ArrowBigUp, MoreVertical, Trash2, X, AlertTriangle, Bookmark, ChevronDown, Archive, Clock
 } from 'lucide-react';
 import axios from 'axios';
 import Link from 'next/link';
@@ -21,7 +21,7 @@ interface UserProfile {
   display_name: string;
   bio?: string;
   profile_image?: string;
-   banner_color?: string;  
+  banner_color?: string;
   created_at: string;
 }
 
@@ -35,6 +35,11 @@ const ReddifyProfile = () => {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [savedPosts, setSavedPosts] = useState<any[]>([]);
 
+  // ARCHIVE STATES
+  const [archivedPosts, setArchivedPosts] = useState<any[]>([]);
+  const [archivedAnnouncements, setArchivedAnnouncements] = useState<any[]>([]);
+  const [archiveTab, setArchiveTab] = useState<'Posts' | 'Announcements'>('Posts');
+
   // Loading States
   const [loading, setLoading] = useState(true);
   const [dataLoading, setDataLoading] = useState(false);
@@ -45,6 +50,8 @@ const ReddifyProfile = () => {
   const [selectedPost, setSelectedPost] = useState<any | null>(null);
   const [showDeleteMenu, setShowDeleteMenu] = useState<number | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+
+  const [openAnnouncementMenu, setOpenAnnouncementMenu] = useState<number | null>(null);
 
   // --- API Functions ---
 
@@ -104,6 +111,17 @@ const ReddifyProfile = () => {
     }
   };
 
+  const fetchArchivedData = async () => {
+    try {
+      const postRes = await axios.get("/api/my-archived-posts/", { withCredentials: true });
+      const annRes = await axios.get("/api/my-archived-announcements/", { withCredentials: true });
+      setArchivedPosts(postRes.data);
+      setArchivedAnnouncements(annRes.data);
+    } catch (e) {
+      console.error("Failed to fetch archives");
+    }
+  };
+
   const handleDeletePost = async () => {
     if (!deleteConfirmId) return;
     try {
@@ -121,6 +139,7 @@ const ReddifyProfile = () => {
   useEffect(() => {
     fetchProfile();
     fetchCommunities();
+    fetchArchivedData(); // Load archives initially
   }, []);
 
   useEffect(() => {
@@ -140,9 +159,9 @@ const ReddifyProfile = () => {
         {/* PROFILE HEADER */}
         <div className="bg-[#0B0D10] border border-[#1F2228] rounded-2xl overflow-hidden shadow-2xl">
           <div
-  className="h-40 w-full"
-  style={{ backgroundColor: profile.banner_color ?? "#4f46e5" }}
-/>
+            className="h-40 w-full"
+            style={{ backgroundColor: profile.banner_color ?? "#4f46e5" }}
+          />
           <div className="px-8 pb-8">
             <div className="flex justify-between items-end -mt-12 mb-6">
               <div className="w-32 h-32 bg-[#1A1A1B] rounded-3xl border-[6px] border-[#0B0D10] shadow-2xl overflow-hidden">
@@ -161,13 +180,12 @@ const ReddifyProfile = () => {
                 </button>
               </div>
             </div>
-            {/* <h1 className="text-3xl font-black">{profile.full_name || profile.username || "user"}</h1> */}
             <p className="text-gray-300 text-base font-bold tracking-tight mt-1">
-  u/{profile.display_name}
-</p>
-<p className="text-gray-400 text-xs uppercase tracking-widest mt-2">
-  {profile.bio}
-</p>
+              u/{profile.display_name}
+            </p>
+            <p className="text-gray-400 text-xs uppercase tracking-widest mt-2">
+              {profile.bio}
+            </p>
           </div>
         </div>
 
@@ -201,21 +219,64 @@ const ReddifyProfile = () => {
                   </div>
                 ) : <EmptyState message="No posts yet." />
               )}
-
-              {/* ANNOUNCEMENTS TAB */}
               {activeTab === "Announcements" && (
-                announcements.length > 0 ? (
-                  <div className="space-y-4">
-                    {announcements.map((a) => (
-                      <div key={a.id} className="bg-[#0B0D10] border border-[#1F2228] rounded-xl p-4">
-                        <h3 className="font-bold text-white">{a.title}</h3>
-                        <p className="text-gray-400 text-sm">{a.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : <EmptyState message="No announcements yet." />
-              )}
+                <div className="space-y-4">
+                  {announcements.map((a) => (
+                    <div key={a.id} className="bg-[#0B0D10] border border-[#1F2228] rounded-xl p-6 transition-all relative overflow-hidden group">
+                      <div className="pr-10">
+                        <h3 className="font-bold text-white text-lg mb-2">{a.title}</h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">{a.content}</p>
 
+                        {/* CREATED AT VALUE */}
+                        <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-4">
+                          {new Date(a.created_at).toLocaleDateString()} • {new Date(a.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+
+                      {/* BOTTOM RIGHT ARROW TOGGLE */}
+                      <button
+                        onClick={() => setOpenAnnouncementMenu(openAnnouncementMenu === a.id ? null : a.id)}
+                        className={`absolute bottom-4 right-4 p-1.5 rounded-lg bg-[#1A1C1E] border border-[#343536] transition-all ${openAnnouncementMenu === a.id ? 'rotate-180 bg-orange-500 border-orange-400 text-white' : 'text-gray-500 hover:text-white'}`}
+                      >
+                        <ChevronDown size={18} />
+                      </button>
+
+                      {/* EXPANDABLE OPTIONS SECTION */}
+                      {openAnnouncementMenu === a.id && (
+                        <div className="mt-6 pt-4 border-t border-[#1F2228] flex gap-3 animate-in slide-in-from-top-2 duration-200">
+                          <button
+                            onClick={async () => {
+                              try {
+                                await axios.patch(`/api/announcements/${a.id}/archive/`, {}, { withCredentials: true });
+                                setAnnouncements(prev => prev.filter(item => item.id !== a.id));
+                                fetchArchivedData(); // Refresh sidebar archives
+                              } catch (err) {
+                                console.error("Archive failed", err);
+                              }
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-300 transition-all"
+                          >
+                            <Archive size={14} /> Archive
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await axios.delete(`/api/announcements/${a.id}/delete/`, { withCredentials: true });
+                                setAnnouncements(prev => prev.filter(item => item.id !== a.id));
+                              } catch (err) {
+                                console.error("Delete failed", err);
+                              }
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-xs font-bold text-red-500 transition-all"
+                          >
+                            <Trash2 size={14} /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
               {/* SAVED TAB (FIXED) */}
               {activeTab === "Saved" && (
                 savedPosts.length > 0 ? (
@@ -224,7 +285,7 @@ const ReddifyProfile = () => {
                       <PostItem key={post.id} post={post} onOpen={setSelectedPost} onDelete={null} showDelete={false} isSaved />
                     ))}
                   </div>
-                ) : <EmptyState message="You haven't saved any posts yet." icon={<Bookmark size={40}/>} />
+                ) : <EmptyState message="You haven't saved any posts yet." icon={<Bookmark size={40} />} />
               )}
             </>
           )}
@@ -233,6 +294,7 @@ const ReddifyProfile = () => {
 
       {/* --- SIDEBAR --- */}
       <aside className="w-full lg:w-[320px] space-y-4 shrink-0 lg:sticky lg:top-[80px] order-1 lg:order-2">
+        {/* About User */}
         <div className="bg-[#0B0D10] border border-[#1F2228] rounded-xl p-5 shadow-sm">
           <div className="flex justify-between items-center mb-4 text-[12px] font-bold text-gray-400 uppercase tracking-widest">
             <span>About User</span>
@@ -245,6 +307,9 @@ const ReddifyProfile = () => {
           </div>
         </div>
 
+       
+
+        {/* My Communities */}
         <div className="bg-[#0B0D10] border border-[#1F2228] rounded-xl overflow-hidden">
           <div className="p-5 border-b border-[#1F2228] text-[12px] font-bold text-gray-400 uppercase tracking-widest">My Communities</div>
           <div className="divide-y divide-[#1F2228]">
@@ -257,49 +322,82 @@ const ReddifyProfile = () => {
             ))}
           </div>
         </div>
+         {/* --- NEW ARCHIVE SECTION --- */}
+        <div className="bg-[#0B0D10] border border-[#1F2228] rounded-xl overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-[#1F2228] flex justify-between items-center">
+            <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-orange-500">
+              <Archive size={14} /> <span>Vault / Archives</span>
+            </div>
+          </div>
+          
+          <div className="flex border-b border-[#1F2228]">
+            <button 
+              onClick={() => setArchiveTab('Posts')}
+              className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${archiveTab === 'Posts' ? 'bg-[#1A1D23] text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              Posts
+            </button>
+            <button 
+              onClick={() => setArchiveTab('Announcements')}
+              className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${archiveTab === 'Announcements' ? 'bg-[#1A1D23] text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              Broadcasts
+            </button>
+          </div>
+
+          <div className="max-h-[300px] overflow-y-auto p-2 space-y-2 custom-scrollbar">
+            {archiveTab === 'Posts' ? (
+              archivedPosts.length > 0 ? archivedPosts.map(p => (
+                <div key={p.id} className="p-3 bg-white/5 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
+                  <h4 className="text-xs font-bold text-white line-clamp-1">{p.title}</h4>
+                  <div className="flex items-center gap-2 mt-2 text-[9px] text-gray-500 font-bold uppercase tracking-tighter">
+                    <Clock size={10} /> {new Date(p.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              )) : <p className="text-center py-6 text-[10px] text-gray-600 font-bold uppercase tracking-widest">Post Vault Empty</p>
+            ) : (
+              archivedAnnouncements.length > 0 ? archivedAnnouncements.map(a => (
+                <div key={a.id} className="p-3 bg-white/5 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
+                  <h4 className="text-xs font-bold text-white line-clamp-1">{a.title}</h4>
+                  <div className="flex items-center gap-2 mt-2 text-[9px] text-gray-500 font-bold uppercase tracking-tighter">
+                    <Clock size={10} /> {new Date(a.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              )) : <p className="text-center py-6 text-[10px] text-gray-600 font-bold uppercase tracking-widest">Broadcast Vault Empty</p>
+            )}
+          </div>
+        </div>
       </aside>
 
       {/* --- MODALS --- */}
       {selectedPost && <DetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
-      
+
       {deleteConfirmId && (
-        <DeleteModal 
-          onCancel={() => setDeleteConfirmId(null)} 
-          onConfirm={handleDeletePost} 
+        <DeleteModal
+          onCancel={() => setDeleteConfirmId(null)}
+          onConfirm={handleDeletePost}
         />
       )}
     </div>
   );
 };
 
-// --- Sub-Components for Clarity ---
-
+// --- Sub-Components (Unchanged) ---
 const PostItem = ({ post, onOpen, onDelete, showDelete, isSaved }: any) => {
   const [menuOpen, setMenuOpen] = useState(false);
-
   return (
-    <div
-      onClick={() => onOpen(post)}
-      className="bg-[#16191D] border border-[#1F2228] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:border-[#343536] flex flex-col h-full relative group"
-    >
+    <div onClick={() => onOpen(post)} className="bg-[#16191D] border border-[#1F2228] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:border-[#343536] flex flex-col h-full relative group">
       <div className="p-4 flex flex-col flex-1">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-white font-bold text-sm line-clamp-2 pr-6">{post.title}</h3>
-          
           {showDelete && (
             <div className="relative">
-              <button
-                onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
-                className="p-1 hover:bg-gray-700 rounded-full text-gray-500"
-              >
+              <button onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }} className="p-1 hover:bg-gray-700 rounded-full text-gray-500">
                 <MoreVertical size={16} />
               </button>
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-32 bg-[#1A1D23] border border-[#343536] rounded-lg shadow-2xl z-30">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onDelete(post.id); setMenuOpen(false); }}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-red-500 hover:bg-red-500/10 text-xs font-bold"
-                  >
+                  <button onClick={(e) => { e.stopPropagation(); onDelete(post.id); setMenuOpen(false); }} className="flex items-center gap-2 w-full px-4 py-2 text-red-500 hover:bg-red-500/10 text-xs font-bold">
                     <Trash2 size={14} /> Delete
                   </button>
                 </div>
@@ -308,7 +406,6 @@ const PostItem = ({ post, onOpen, onDelete, showDelete, isSaved }: any) => {
           )}
           {isSaved && <Bookmark size={14} className="text-blue-500" />}
         </div>
-
         <div className="mt-auto pt-4 flex items-center justify-between text-[#818384]">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
