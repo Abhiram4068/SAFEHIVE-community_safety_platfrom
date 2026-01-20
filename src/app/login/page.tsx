@@ -63,7 +63,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className="w-12 h-12 bg-[#FF4500] rounded-full flex items-center justify-center">
             <div className="w-6 h-6 bg-white rounded-full opacity-20" />
           </div>
-          <h1 className="text-2xl font-bold">Reddify</h1>
+          <h1 className="text-2xl font-bold">SafeHive</h1>
           <p className="text-gray-400 text-sm">Welcome back, login to your account</p>
         </div>
 
