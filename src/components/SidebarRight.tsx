@@ -3,9 +3,14 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { Plus, Hash, TrendingUp, ChevronRight } from 'lucide-react';
 import { CreateCommunityModal } from './CreateCommunityModal';
+import { useEffect } from 'react';
+import axios from 'axios';
+
 
 export const RightSidebar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [frequentCategories, setFrequentCategories] = useState([]);
+
 
   const popularCategories = [
     { name: "Traffic", color: "text-orange-500" },
@@ -13,10 +18,19 @@ export const RightSidebar = () => {
     { name: "Infrastructure", color: "text-green-500" },
   ];
 
-  const frequentCategories = [
-    { name: "Neighborhood Watch" },
-    { name: "Lost & Found" },
-  ];
+  /* 🔹 FETCH FREQUENT CATEGORIES */
+  useEffect(() => {
+    const fetchFrequentCategories = async () => {
+      try {
+        const res = await axios.get("/api/frequentcat/");
+        setFrequentCategories(res.data);
+      } catch (error) {
+        console.error("Failed to fetch frequent categories", error);
+      }
+    };
+
+    fetchFrequentCategories();
+  }, []);
 
   return (
     <aside className="hidden xl:block w-80 pl-4 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto border-l border-[#1F2228] [scrollbar-width:none]">

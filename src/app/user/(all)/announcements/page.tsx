@@ -76,7 +76,7 @@ export default function AnnouncementsListPage() {
                   {post.created_at ? new Date(post.created_at).toLocaleDateString() : "Just now"}
                 </span>
               </div>
-              <MoreHorizontal className="w-5 h-5 text-[#838891] cursor-pointer" />
+
             </div>
 
             <div className="space-y-4">
@@ -85,18 +85,12 @@ export default function AnnouncementsListPage() {
             </div>
 
             <div className="flex items-center gap-1 mt-6 pt-2 border-t border-[#2D2F34]">
-              <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
-                <Share2 className="w-4 h-4 group-hover:text-white" />
-                <span className="text-xs font-bold group-hover:text-white">Share</span>
-              </button>
+             
               <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
                 <Bookmark className="w-4 h-4 group-hover:text-white" />
                 <span className="text-xs font-bold group-hover:text-white">Save</span>
               </button>
-              <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
-                <Flag className="w-4 h-4 group-hover:text-red-400" />
-                <span className="text-xs font-bold group-hover:text-red-400">Flag</span>
-              </button>
+              
             </div>
           </article>
         ))}

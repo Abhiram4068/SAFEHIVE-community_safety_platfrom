@@ -21,7 +21,7 @@ interface UserProfile {
   display_name: string;
   bio?: string;
   profile_image?: string;
-   banner_color?: string;  
+  banner_color?: string;
   created_at: string;
 }
 
@@ -116,6 +116,18 @@ const ReddifyProfile = () => {
     }
   };
 
+  const handleDeleteAnnouncement = async () => {
+    if (!deleteConfirmId) return;
+    try {
+      await axios.delete(`/api/announcement/${deleteConfirmId}/delete`, { withCredentials: true });
+      setAnnouncements(announcements.filter(a => a.id !== deleteConfirmId));
+      setDeleteConfirmId(null);
+      setShowDeleteMenu(null);
+    } catch (e) {
+      console.error("Announcement delete failed");
+    }
+  };
+
   // --- Effect Hooks ---
 
   useEffect(() => {
@@ -140,9 +152,9 @@ const ReddifyProfile = () => {
         {/* PROFILE HEADER */}
         <div className="bg-[#0B0D10] border border-[#1F2228] rounded-2xl overflow-hidden shadow-2xl">
           <div
-  className="h-40 w-full"
-  style={{ backgroundColor: profile.banner_color ?? "#4f46e5" }}
-/>
+            className="h-40 w-full"
+            style={{ backgroundColor: profile.banner_color ?? "#4f46e5" }}
+          />
           <div className="px-8 pb-8">
             <div className="flex justify-between items-end -mt-12 mb-6">
               <div className="w-32 h-32 bg-[#1A1A1B] rounded-3xl border-[6px] border-[#0B0D10] shadow-2xl overflow-hidden">
@@ -161,13 +173,12 @@ const ReddifyProfile = () => {
                 </button>
               </div>
             </div>
-            {/* <h1 className="text-3xl font-black">{profile.full_name || profile.username || "user"}</h1> */}
             <p className="text-gray-300 text-base font-bold tracking-tight mt-1">
-  u/{profile.display_name}
-</p>
-<p className="text-gray-400 text-xs uppercase tracking-widest mt-2">
-  {profile.bio}
-</p>
+              u/{profile.display_name}
+            </p>
+            <p className="text-gray-400 text-xs uppercase tracking-widest mt-2">
+              {profile.bio}
+            </p>
           </div>
         </div>
 
@@ -207,16 +218,50 @@ const ReddifyProfile = () => {
                 announcements.length > 0 ? (
                   <div className="space-y-4">
                     {announcements.map((a) => (
-                      <div key={a.id} className="bg-[#0B0D10] border border-[#1F2228] rounded-xl p-4">
-                        <h3 className="font-bold text-white">{a.title}</h3>
-                        <p className="text-gray-400 text-sm">{a.content}</p>
+                      <div key={a.id} className="bg-[#0B0D10] border border-[#1F2228] rounded-xl p-5 relative group">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="font-bold text-white text-lg">{a.title}</h3>
+                            <p className="text-gray-400 text-sm mt-2 leading-relaxed">{a.content}</p>
+                            <div className="mt-4 text-[10px] text-gray-500 font-medium uppercase tracking-wider">
+                              Posted {new Date(a.created_at).toLocaleDateString()}
+                            </div>
+                          </div>
+                          
+                          {/* DELETE OPTION FOR ANNOUNCEMENTS */}
+                          <div className="relative">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowDeleteMenu(showDeleteMenu === a.id ? null : a.id);
+                              }}
+                              className="p-2 hover:bg-[#1A1C1E] rounded-full text-gray-500 transition-colors"
+                            >
+                              <MoreVertical size={18} />
+                            </button>
+                            {showDeleteMenu === a.id && (
+                              <div className="absolute right-0 mt-2 w-40 bg-[#1A1D23] border border-[#343536] rounded-lg shadow-2xl z-30">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDeleteConfirmId(a.id);
+                                    setShowDeleteMenu(null);
+                                  }}
+                                  className="flex items-center gap-2 w-full px-4 py-3 text-red-500 hover:bg-red-500/10 text-xs font-bold transition-colors"
+                                >
+                                  <Trash2 size={14} /> Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : <EmptyState message="No announcements yet." />
               )}
 
-              {/* SAVED TAB (FIXED) */}
+              {/* SAVED TAB */}
               {activeTab === "Saved" && (
                 savedPosts.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -224,7 +269,7 @@ const ReddifyProfile = () => {
                       <PostItem key={post.id} post={post} onOpen={setSelectedPost} onDelete={null} showDelete={false} isSaved />
                     ))}
                   </div>
-                ) : <EmptyState message="You haven't saved any posts yet." icon={<Bookmark size={40}/>} />
+                ) : <EmptyState message="You haven't saved any posts yet." icon={<Bookmark size={40} />} />
               )}
             </>
           )}
@@ -261,18 +306,18 @@ const ReddifyProfile = () => {
 
       {/* --- MODALS --- */}
       {selectedPost && <DetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
-      
+
       {deleteConfirmId && (
-        <DeleteModal 
-          onCancel={() => setDeleteConfirmId(null)} 
-          onConfirm={handleDeletePost} 
+        <DeleteModal
+          onCancel={() => setDeleteConfirmId(null)}
+          onConfirm={activeTab === 'Posts' ? handleDeletePost : handleDeleteAnnouncement}
         />
       )}
     </div>
   );
 };
 
-// --- Sub-Components for Clarity ---
+// --- Sub-Components ---
 
 const PostItem = ({ post, onOpen, onDelete, showDelete, isSaved }: any) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -285,7 +330,7 @@ const PostItem = ({ post, onOpen, onDelete, showDelete, isSaved }: any) => {
       <div className="p-4 flex flex-col flex-1">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-white font-bold text-sm line-clamp-2 pr-6">{post.title}</h3>
-          
+
           {showDelete && (
             <div className="relative">
               <button
@@ -328,9 +373,9 @@ const PostItem = ({ post, onOpen, onDelete, showDelete, isSaved }: any) => {
 };
 
 const EmptyState = ({ message, icon }: any) => (
-  <div className="py-20 flex flex-col items-center justify-center text-gray-600 border-2 border-dashed border-[#1F2228] rounded-xl">
+  <div className="py-20 flex flex-col items-center justify-center text-gray-600 border-2 border-dashed border-[#1F2228] rounded-xl w-full">
     {icon}
-    <p>{message}</p>
+    <p className="mt-2 font-medium">{message}</p>
   </div>
 );
 
@@ -358,9 +403,9 @@ const DeleteModal = ({ onCancel, onConfirm }: any) => (
     <div className="bg-[#0B0D10] border border-[#1F2228] w-full max-w-md rounded-2xl p-6 shadow-2xl">
       <div className="flex items-center gap-3 mb-4 text-orange-500">
         <AlertTriangle size={24} />
-        <h2 className="text-xl font-bold text-white">Delete Post?</h2>
+        <h2 className="text-xl font-bold text-white">Confirm Delete?</h2>
       </div>
-      <p className="text-gray-400 text-sm mb-8">Are you sure? This action cannot be undone.</p>
+      <p className="text-gray-400 text-sm mb-8">Are you sure? This action cannot be undone and will be permanently removed.</p>
       <div className="flex gap-3 justify-end">
         <button onClick={onCancel} className="px-5 py-2 rounded-full text-sm font-bold text-gray-400 hover:bg-[#1A1C1E]">Cancel</button>
         <button onClick={onConfirm} className="px-5 py-2 rounded-full text-sm font-bold bg-red-600 text-white hover:bg-red-700">Delete</button>
