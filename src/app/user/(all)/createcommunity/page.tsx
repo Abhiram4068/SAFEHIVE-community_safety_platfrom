@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Globe, Lock } from 'lucide-react';
+import { ArrowLeft, Globe, Lock, ShieldAlert } from 'lucide-react';
 import axios from 'axios';
 
 export default function CreateCommunityPage() {
@@ -15,15 +15,19 @@ export default function CreateCommunityPage() {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post("http://127.0.0.1:8005/api/groups/create/", {
+
+            const response = await axios.post("/api/community/create/", {
                 name: newName,
                 status: status 
             });
-            router.push('/top-communities'); 
-            router.refresh();
+
+            if (response.status === 200 || response.status === 201) {
+                router.push('/top-communities'); 
+                router.refresh();
+            }
         } catch (error) {
-            console.error("Error creating community:", error);
-            alert("Failed to create community.");
+            console.error("Error creating community via proxy:", error);
+            alert("Failed to create community. Please ensure you follow the guidelines.");
         } finally {
             setLoading(false);
         }
@@ -31,7 +35,6 @@ export default function CreateCommunityPage() {
 
     return (
         <div className="min-h-screen bg-[#0F1215] flex items-center justify-center p-4 md:p-10">
-            {/* CHANGED: max-w-lg to max-w-5xl for a wide layout */}
             <div className="bg-[#15191C] border border-[#2D2F34] p-8 md:p-12 rounded-none w-full max-w-5xl shadow-xl">
                 
                 <button 
@@ -42,6 +45,28 @@ export default function CreateCommunityPage() {
                     <span className="text-sm font-medium">Back to communities</span>
                 </button>
 
+                {/* GUIDELINES */}
+                <div className="mb-10 bg-[#1A1D23] border-l-4 border-blue-500 p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <ShieldAlert className="text-blue-500 w-5 h-5" />
+                        <h3 className="text-white font-bold text-sm uppercase tracking-widest">Community Guidelines</h3>
+                    </div>
+                    <ul className="space-y-3">
+                        <li className="flex gap-3 text-sm text-[#838891]">
+                            <span className="text-blue-500">•</span>
+                            <span>This platform is intended only for community safety, public awareness, and general welfare.</span>
+                        </li>
+                        <li className="flex gap-3 text-sm text-[#838891]">
+                            <span className="text-blue-500">•</span>
+                            <span>Communities for personal use, entertainment, promotion, or unrelated discussions are not allowed.</span>
+                        </li>
+                        <li className="flex gap-3 text-sm text-[#838891]">
+                            <span className="text-blue-500">•</span>
+                            <span>Community names and descriptions must be clear, respectful, and relevant to safety or awareness.</span>
+                        </li>
+                    </ul>
+                </div>
+
                 <div className="mb-10">
                     <h2 className="text-white text-3xl font-bold mb-2">Create a Community</h2>
                     <p className="text-[#838891] text-sm border-b border-[#2D2F34] pb-6">
@@ -50,10 +75,7 @@ export default function CreateCommunityPage() {
                 </div>
                 
                 <form onSubmit={handleCreateCommunity}>
-                    {/* CHANGED: Used a grid layout to take advantage of the width */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        
-                        {/* Left Side: Name input */}
                         <div className="space-y-4">
                             <div>
                                 <label className="text-white text-lg font-bold block mb-1">Name</label>
@@ -77,7 +99,6 @@ export default function CreateCommunityPage() {
                             </div>
                         </div>
 
-                        {/* Right Side: Community Type */}
                         <div>
                             <label className="text-white text-lg font-bold block mb-4">Privacy Settings</label>
                             <div className="space-y-6">
@@ -94,7 +115,7 @@ export default function CreateCommunityPage() {
                                         <Globe size={20} className="text-[#838891] shrink-0 mt-0.5" />
                                         <div>
                                             <span className="text-sm font-bold text-white block">Public</span>
-                                            <p className="text-xs text-[#838891] leading-relaxed">Anyone can view, post, and comment. Best for growing a large audience.</p>
+                                            <p className="text-xs text-[#838891] leading-relaxed">Anyone can view, post, and comment.</p>
                                         </div>
                                     </div>
                                 </label>
@@ -112,7 +133,7 @@ export default function CreateCommunityPage() {
                                         <Lock size={20} className="text-[#838891] shrink-0 mt-0.5" />
                                         <div>
                                             <span className="text-sm font-bold text-white block">Private</span>
-                                            <p className="text-xs text-[#838891] leading-relaxed">Only approved members can see content. Best for closed groups or testing.</p>
+                                            <p className="text-xs text-[#838891] leading-relaxed">Only approved members can see content.</p>
                                         </div>
                                     </div>
                                 </label>
@@ -120,7 +141,6 @@ export default function CreateCommunityPage() {
                         </div>
                     </div>
                     
-                    {/* Action Buttons: Full width footer bar */}
                     <div className="flex gap-4 pt-8 justify-end bg-[#1A1D23] -mx-8 md:-mx-12 -mb-8 md:-mb-12 p-6 mt-16 border-t border-[#2D2F34]">
                         <button 
                             type="button"
@@ -130,6 +150,7 @@ export default function CreateCommunityPage() {
                             Cancel
                         </button>
                         
+                        {/* THE BUTTON */}
                         <button 
                             type="submit"
                             disabled={loading}

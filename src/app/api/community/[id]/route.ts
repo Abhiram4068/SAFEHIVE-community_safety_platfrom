@@ -4,8 +4,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params; // ✅ unwrap params
+
   const cookieStore = await cookies();
   const access = cookieStore.get("access")?.value;
 
@@ -15,13 +17,15 @@ export async function GET(
 
   try {
     const res = await axios.get(
-      `http://127.0.0.1:8005/api/groups/${params.id}/`,
+      `http://127.0.0.1:8005/api/groups/${id}/`,
       {
         headers: {
           Authorization: `Bearer ${access}`,
         },
       }
     );
+
+    console.log("BACKEND RESPONSE:", res.data);
 
     return NextResponse.json(res.data);
   } catch (err: any) {

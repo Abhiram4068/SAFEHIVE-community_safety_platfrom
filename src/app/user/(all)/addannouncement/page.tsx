@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { X, ArrowLeft } from 'lucide-react';
+import { X, ArrowLeft, Info } from 'lucide-react'; // Added Info icon
 import Link from 'next/link';
 
 export default function AddAnnouncementPage() {
@@ -16,12 +16,6 @@ export default function AddAnnouncementPage() {
     e.preventDefault();
     if (!newTitle || !newContent) return;
 
-    // const token = localStorage.getItem("access");
-    // if (!token) {
-    //   alert("Login to create an announcement!");
-    //   return;
-    // }
-
     setIsSubmitting(true);
     try {
       await axios.post('/api/announcements/add/', 
@@ -31,26 +25,24 @@ export default function AddAnnouncementPage() {
         },
         {
           headers: {
-            // Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"
           }
         }
       );
 
-      // Redirect back to the announcements list
       router.push('/user/announcements'); 
       router.refresh();
     } catch (error) {
       console.error("Post failed:", error);
-      alert("Failed to post announcement. Make sure your backend is running!");
+      alert("Failed to post announcement.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-blackflex items-start justify-center pt-10 px-4">
-      <div className="bg-[#15191C] border border-[#2D2F34] w-full max-w-2xl rounded-l shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-black flex items-start justify-center pt-10 px-4">
+      <div className="bg-[#15191C] border border-[#2D2F34] w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden">
         
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#2D2F34]">
@@ -67,6 +59,21 @@ export default function AddAnnouncementPage() {
         
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          
+          {/* IMPORTANT NOTICE BOX */}
+          <div className="bg-[#1A1D23] border-l-4 border-blue-500 p-4 rounded-r-md">
+            <div className="flex items-center gap-2 mb-2">
+              <Info className="w-4 h-4 text-blue-500" />
+              <span className="text-xs font-bold text-white uppercase tracking-widest">Important Notice</span>
+            </div>
+            <ul className="text-[13px] text-[#838891] space-y-1.5 leading-relaxed list-disc ml-4">
+              <li> •  This announcement will be visible to all members on this platform.</li>
+              <li>•  Ensure the information is accurate and verified.</li>
+              <li>•  Announcements must follow community and platform rules.</li>
+              <li>•  Do not include personal, confidential, or sensitive data.</li>
+              <li>•  You are responsible for the content you publish.</li>
+            </ul>
+          </div>
           <div>
             <label className="block text-xs font-bold text-[#838891] uppercase mb-2 tracking-wider">
               Announcement Title
@@ -77,9 +84,10 @@ export default function AddAnnouncementPage() {
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Title"
-              className="w-full bg-[#15191C] border border-[#2D2F34] rounded-l p-3 text-white focus:outline-none focus:border-gray-500 transition text-lg"
+              className="w-full bg-[#15191C] border border-[#2D2F34] rounded p-3 text-white focus:outline-none focus:border-gray-500 transition text-lg"
             />
           </div>
+
 
           <div>
             <label className="block text-xs font-bold text-[#838891] uppercase mb-2 tracking-wider">
@@ -87,11 +95,11 @@ export default function AddAnnouncementPage() {
             </label>
             <textarea 
               required
-              rows={10}
+              rows={8}
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
-              placeholder="Text (optional)"
-              className="w-full bg-[#15191C] border border-[#2D2F34] rounded-l p-3 text-white focus:outline-none focus:border-gray-500 resize-none transition"
+              placeholder="Type your official announcement here..."
+              className="w-full bg-[#15191C] border border-[#2D2F34] rounded p-3 text-white focus:outline-none focus:border-gray-500 resize-none transition"
             />
           </div>
 
@@ -107,7 +115,7 @@ export default function AddAnnouncementPage() {
               disabled={isSubmitting}
               className="px-10 py-2 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Posting..." : "Post"}
+              {isSubmitting ? "Posting..." : "Post Announcement"}
             </button>
           </div>
         </form>

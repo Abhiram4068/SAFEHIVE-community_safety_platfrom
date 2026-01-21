@@ -8,7 +8,8 @@ import {
   MoreHorizontal, 
   Users, 
   X, 
-  CheckCircle2 
+  CheckCircle2,
+  AlertTriangle 
 } from 'lucide-react';
 
 type TabType = 'posts' | 'announcements' | 'members';
@@ -28,6 +29,7 @@ export default function CommunityCenter({ params }: { params: Promise<{ slug: st
   // Membership & Modal States
   const [isJoined, setIsJoined] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false); // New state for leave popup
   const [isJoining, setIsJoining] = useState(false);
   const [joinedSuccess, setJoinedSuccess] = useState(false);
 
@@ -38,19 +40,18 @@ export default function CommunityCenter({ params }: { params: Promise<{ slug: st
       try {
         setLoading(true);
         const [groupRes, postsRes, membersRes, announcementsRes] = await Promise.all([
-          axios.get(`http://127.0.0.1:8005/api/groups/${groupId}/`),
+          axios.get(`/api/community/${groupId}`),
           axios.get(`http://127.0.0.1:8005/api/group/${groupId}/posts/`),
           axios.get(`http://127.0.0.1:8005/api/groups/members/${groupId}/`),
           axios.get(`http://127.0.0.1:8005/api/groups/${groupId}/announcements/`)
           
         ]);
-console.log("GROUP RESPONSE:", groupRes.data);
+        console.log("GROUP RESPONSE:", groupRes.data);
         setGroupData(groupRes.data);
         setPosts(postsRes.data);
         setMembers(membersRes.data || []);
         setAnnouncements(announcementsRes.data || []);
         
-        // Assuming your backend returns a boolean field 'is_member'
         setIsJoined(groupRes.data.is_member || false);
 
       } catch (error) {
@@ -65,12 +66,10 @@ console.log("GROUP RESPONSE:", groupRes.data);
   const handleJoinConfirm = async () => {
     setIsJoining(true);
     try {
-      // Calls your app/api/join/route.ts
-      const response = await axios.post('/api/join', { groupId });
-
+      const response = await axios.post('/api/community/join', { groupId });
       if (response.status === 200) {
         setJoinedSuccess(true);
-        setIsJoined(true); // Switch UI to "Joined" state
+        setIsJoined(true);
         
         setTimeout(() => {
           setIsModalOpen(false);
@@ -82,6 +81,18 @@ console.log("GROUP RESPONSE:", groupRes.data);
       alert("Error joining group.");
     } finally {
       setIsJoining(false);
+    }
+  };
+
+  // Logic for leaving
+  const handleLeaveConfirm = async () => {
+    try {
+     const response = await axios.post('/api/community/leave', { groupId });
+      console.log("Calling Leave API for:", groupId);
+      setIsJoined(false);
+      setIsLeaveModalOpen(false);
+    } catch (error) {
+      console.error("Leave error:", error);
     }
   };
 
@@ -149,6 +160,39 @@ console.log("GROUP RESPONSE:", groupRes.data);
         </div>
       )}
 
+      {/* --- LEAVE CONFIRMATION MODAL --- */}
+      {isLeaveModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setIsLeaveModalOpen(false)}
+          />
+          <div className="relative bg-[#1A1D23] border border-[#343536] w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center">
+             <div className="flex justify-center mb-4">
+                <AlertTriangle className="text-red-500 w-12 h-12" />
+             </div>
+             <h3 className="text-white font-bold text-lg mb-2">Leave r/{communityName}?</h3>
+             <p className="text-[#818384] text-sm mb-6">
+               You will stop seeing posts from this community in your home feed.
+             </p>
+             <div className="flex gap-3">
+                <button 
+                  onClick={() => setIsLeaveModalOpen(false)}
+                  className="flex-1 bg-[#343536] text-white py-2 rounded-full font-bold text-sm"
+                >
+                  Stay
+                </button>
+                <button 
+                  onClick={handleLeaveConfirm}
+                  className="flex-1 bg-red-600 text-white py-2 rounded-full font-bold text-sm hover:bg-red-700 transition-colors"
+                >
+                  Leave
+                </button>
+             </div>
+          </div>
+        </div>
+      )}
+
       {/* HERO BANNER */}
       <div className="w-full">
         <div className="relative w-full h-44 bg-[#D9C4B1] rounded-b-lg">
@@ -166,15 +210,12 @@ console.log("GROUP RESPONSE:", groupRes.data);
           
          <div className="flex items-center gap-2">
   {isJoined ? (
-    /* JOINED / LEAVE TOGGLE BUTTON */
     <button
       className="group relative flex items-center justify-center gap-2 
                  border border-[#343536] text-white px-6 py-1.5 
                  rounded-full font-bold text-sm transition-all 
                  hover:border-red-500 hover:bg-red-500/10 min-w-[110px]"
-      onClick={() => {
-        console.log("Trigger leave API...");
-      }}
+      onClick={() => setIsLeaveModalOpen(true)} // Changed to trigger leave modal
     >
       <div className="flex items-center gap-2 group-hover:hidden">
         <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -187,7 +228,6 @@ console.log("GROUP RESPONSE:", groupRes.data);
       </div>
     </button>
   ) : (
-    /* JOIN BUTTON */
     <button
       onClick={() => setIsModalOpen(true)}
       className="bg-white hover:bg-gray-200 text-black 
@@ -236,8 +276,8 @@ console.log("GROUP RESPONSE:", groupRes.data);
               {members.map((member: any) => (
                 <div key={member.id} className="p-4 flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">{member.user_name?.charAt(0)}</div>
-                    <div><p className="text-white font-bold text-sm">{member.user_name}</p><p className="text-[#818384] text-xs">Member</p></div>
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">{member.display_name?.charAt(0)}</div>
+                    <div><p className="text-white font-bold text-sm">{member.display_name}</p><p className="text-[#818384] text-xs">Member</p></div>
                   </div>
                 </div>
               ))}

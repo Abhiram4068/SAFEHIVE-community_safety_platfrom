@@ -1,16 +1,17 @@
 "use client";
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { Plus, Hash, TrendingUp, ChevronRight } from 'lucide-react';
+import { Plus, Megaphone, Bell, ChevronRight } from 'lucide-react'; // Changed icons
 import { CreateCommunityModal } from './CreateCommunityModal';
 
 export const RightSidebar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const popularCategories = [
-    { name: "Traffic", color: "text-orange-500" },
-    { name: "Safety", color: "text-blue-500" },
-    { name: "Infrastructure", color: "text-green-500" },
+  // Updated data for Admin Announcements
+  const adminAnnouncements = [
+    { title: "System Maintenance", date: "Jan 22", color: "text-red-500" },
+    { title: "Community Guidelines", date: "Official", color: "text-blue-500" },
+    { title: "New Feature: Maps", date: "Jan 15", color: "text-green-500" },
   ];
 
   const frequentCategories = [
@@ -43,35 +44,38 @@ export const RightSidebar = () => {
         </div>
       </div>
 
-      {/* POPULAR & FREQUENT CATEGORIES SECTION */}
+      {/* ADMIN ANNOUNCEMENTS SECTION */}
       <div className="bg-[#0B0D10] rounded-lg mb-4 border border-[#1F2228] overflow-hidden">
         <div className="p-4 flex items-center gap-2">
-          <TrendingUp size={16} className="text-blue-500" />
-          <h3 className="text-white font-bold text-sm uppercase tracking-wider">Popular Communities</h3>
+          <Megaphone size={16} className="text-red-500" />
+          <h3 className="text-white font-bold text-sm uppercase tracking-wider">Admin Announcements</h3>
         </div>
 
-        {/* Floating Separator Line (Doesn't touch borders) */}
         <div className="px-4">
           <div className="h-[1px] w-full bg-[#1F2228]" />
         </div>
         
         <div className="flex flex-col py-2">
-          {popularCategories.map((cat, idx) => (
+          {adminAnnouncements.map((item, idx) => (
             <Link 
               key={idx} 
-              href={`/category/${cat.name.toLowerCase()}`}
+              href={`/announcements/${item.title.toLowerCase().replace(/\s+/g, '-')}`}
               className="px-4 py-2.5 hover:bg-[#1A1D23] transition flex items-center justify-between group"
             >
-              <div className="flex items-center gap-3">
-                <div className={`w-1 h-3.5 rounded-full ${cat.color} bg-current opacity-60 group-hover:opacity-100 transition`} />
-                <span className="text-gray-300 text-sm font-medium group-hover:text-white">c/{cat.name}</span>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <div className={`w-1 h-3 rounded-full ${item.color} bg-current`} />
+                  <span className="text-gray-300 text-sm font-medium group-hover:text-white transition-colors">
+                    {item.title}
+                  </span>
+                </div>
+                <span className="text-[10px] text-[#5c6066] ml-3">{item.date}</span>
               </div>
               <ChevronRight size={14} className="text-[#5c6066] group-hover:text-white transition-transform group-hover:translate-x-0.5" />
             </Link>
           ))}
         </div>
 
-        {/* Another Separator before the frequent section */}
         <div className="px-4 py-2">
           <div className="h-[1px] w-full bg-[#1F2228]" />
         </div>
@@ -85,7 +89,6 @@ export const RightSidebar = () => {
                 href={`/category/${cat.name.toLowerCase()}`}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1A1D23] border border-[#2F333A] rounded-md text-xs text-gray-400 hover:text-white hover:border-gray-500 transition"
               >
-                {cat.icon}
                 {cat.name}
               </Link>
             ))}
