@@ -3,25 +3,42 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
-import { MoreHorizontal, Plus, Search, Share2, Bookmark, Flag, Home } from 'lucide-react';
+import { Plus, Search, Pin, Home, MessageCircle } from 'lucide-react'; // Added MessageCircle
 
 type AnnouncementType = {
   id: number;
   title: string;
   content: string;
   created_at: string;
+  is_pinned?: boolean;
+  is_owner: boolean; 
+};
+
+type UserType = {
+  id: number;
+  name: string;
 };
 
 export default function AnnouncementsListPage() {
   const [announcements, setAnnouncements] = useState<AnnouncementType[]>([]);
+  
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   async function fetchData() {
     try {
-      const response = await axios.get('http://127.0.0.1:8003/api/announcements/');
+      setLoading(true);
+      setError(null);
+      
+      // In a real app, you'd fetch the user from your auth session (e.g., NextAuth or an API)
+      // Mocking user ID 1 for this example
+     
+
+      const response = await axios.get('/api/announcements');
       setAnnouncements(response.data);
     } catch (error) {
       console.error("Error fetching announcements:", error);
+      setError("Failed to load announcements");
     } finally {
       setLoading(false);
     }
@@ -30,6 +47,20 @@ export default function AnnouncementsListPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  async function handleSave(postId: number) {
+    if (!postId) return;
+    try {
+      const res = await axios.patch(`/api/announcements/${postId}/pin/`);
+      const { pinned } = res.data;
+      
+      setAnnouncements((prev) =>
+        prev.map((p) => p.id === postId ? { ...p, is_pinned: pinned } : p)
+      );
+    } catch (err) {
+      console.error("Save toggle failed", err);
+    }
+  }
 
   return (
     <div className="flex-1 w-full lg:max-w-4xl mx-auto pb-10 px-4">
@@ -62,6 +93,12 @@ export default function AnnouncementsListPage() {
         </div>
       </section>
 
+      {error && (
+        <div className="bg-red-500/10 border border-red-500 rounded-lg p-4 mb-6 text-red-400">
+          {error}
+        </div>
+      )}
+
       <div className="space-y-6">
         {announcements.map((post) => (
           <article key={post.id} className="bg-[#15191C] border border-[#2D2F34] rounded-xl p-6 shadow-sm hover:border-[#3d3f44] transition">
@@ -76,7 +113,6 @@ export default function AnnouncementsListPage() {
                   {post.created_at ? new Date(post.created_at).toLocaleDateString() : "Just now"}
                 </span>
               </div>
-              <MoreHorizontal className="w-5 h-5 text-[#838891] cursor-pointer" />
             </div>
 
             <div className="space-y-4">
@@ -84,19 +120,34 @@ export default function AnnouncementsListPage() {
               <div className="text-[#E4E6EB] text-[15px] leading-relaxed whitespace-pre-wrap">{post.content}</div>
             </div>
 
-            <div className="flex items-center gap-1 mt-6 pt-2 border-t border-[#2D2F34]">
-              <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
-                <Share2 className="w-4 h-4 group-hover:text-white" />
-                <span className="text-xs font-bold group-hover:text-white">Share</span>
+            <div className="flex items-center gap-4 mt-6 pt-2 border-t border-[#2D2F34]">
+              {/* PIN BUTTON */}
+              <button
+                onClick={() => handleSave(post.id)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition hover:bg-[#2D2F34] ${post?.is_pinned ? " text-blue-500" : " text-[#838891] hover:text-white"}`}
+              >
+                <Pin
+                  className={`w-4 h-4 ${
+                    post.is_pinned
+                      ? "text-yellow-400 fill-yellow-400"
+                      : ""
+                  }`}
+                />
+                <span className="text-xs font-bold">
+                  {post.is_pinned ? "Pinned" : "Pin"}
+                </span>
               </button>
-              <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
-                <Bookmark className="w-4 h-4 group-hover:text-white" />
-                <span className="text-xs font-bold group-hover:text-white">Save</span>
-              </button>
-              <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
-                <Flag className="w-4 h-4 group-hover:text-red-400" />
-                <span className="text-xs font-bold group-hover:text-red-400">Flag</span>
-              </button>
+
+              {/* ENQUIRE BUTTON: Only shows if the current user is NOT the author */}
+             {!post.is_owner && (
+  <Link
+    href={`/user/messages/new?announcementId=${post.id}`}
+    className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[#838891] hover:text-white hover:bg-[#2D2F34] transition"
+  >
+    <MessageCircle className="w-4 h-4" />
+    <span className="text-xs font-bold">Enquire</span>
+  </Link>
+)}
             </div>
           </article>
         ))}

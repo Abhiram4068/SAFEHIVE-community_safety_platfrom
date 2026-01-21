@@ -24,7 +24,7 @@ export default function AddAnnouncementPage() {
 
     setIsSubmitting(true);
     try {
-      await axios.post('http://127.0.0.1:8003/api/announcements/add', 
+      await axios.post('/api/announcements/add/', 
         {
           title: newTitle,
           content: newContent,
@@ -38,7 +38,7 @@ export default function AddAnnouncementPage() {
       );
 
       // Redirect back to the announcements list
-      router.push('/announcements'); 
+      router.push('/user/announcements'); 
       router.refresh();
     } catch (error) {
       console.error("Post failed:", error);
