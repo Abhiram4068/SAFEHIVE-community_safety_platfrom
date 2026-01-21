@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Settings, Calendar, Info, ChevronRight, MessageSquare,
-  ArrowBigUp, MoreVertical, Trash2, X, AlertTriangle, Bookmark, ChevronDown, Archive, Clock
+  ArrowBigUp, MoreVertical, Trash2, X, AlertTriangle, Bookmark, ChevronDown, Archive, Clock, PinIcon
 } from 'lucide-react';
 import axios from 'axios';
 import Link from 'next/link';
@@ -323,50 +323,41 @@ const ReddifyProfile = () => {
           </div>
         </div>
          {/* --- NEW ARCHIVE SECTION --- */}
-        <div className="bg-[#0B0D10] border border-[#1F2228] rounded-xl overflow-hidden shadow-sm">
-          <div className="p-4 border-b border-[#1F2228] flex justify-between items-center">
-            <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-orange-500">
-              <Archive size={14} /> <span>Vault / Archives</span>
-            </div>
-          </div>
-          
-          <div className="flex border-b border-[#1F2228]">
-            <button 
-              onClick={() => setArchiveTab('Posts')}
-              className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${archiveTab === 'Posts' ? 'bg-[#1A1D23] text-white' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              Posts
-            </button>
-            <button 
-              onClick={() => setArchiveTab('Announcements')}
-              className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${archiveTab === 'Announcements' ? 'bg-[#1A1D23] text-white' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              Broadcasts
-            </button>
-          </div>
-
-          <div className="max-h-[300px] overflow-y-auto p-2 space-y-2 custom-scrollbar">
-            {archiveTab === 'Posts' ? (
-              archivedPosts.length > 0 ? archivedPosts.map(p => (
-                <div key={p.id} className="p-3 bg-white/5 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
-                  <h4 className="text-xs font-bold text-white line-clamp-1">{p.title}</h4>
-                  <div className="flex items-center gap-2 mt-2 text-[9px] text-gray-500 font-bold uppercase tracking-tighter">
-                    <Clock size={10} /> {new Date(p.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-              )) : <p className="text-center py-6 text-[10px] text-gray-600 font-bold uppercase tracking-widest">Post Vault Empty</p>
-            ) : (
-              archivedAnnouncements.length > 0 ? archivedAnnouncements.map(a => (
-                <div key={a.id} className="p-3 bg-white/5 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
-                  <h4 className="text-xs font-bold text-white line-clamp-1">{a.title}</h4>
-                  <div className="flex items-center gap-2 mt-2 text-[9px] text-gray-500 font-bold uppercase tracking-tighter">
-                    <Clock size={10} /> {new Date(a.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-              )) : <p className="text-center py-6 text-[10px] text-gray-600 font-bold uppercase tracking-widest">Broadcast Vault Empty</p>
-            )}
-          </div>
-        </div>
+        {/* NEW ARCHIVE BUTTON */}
+  <Link 
+    href="/user/archive" 
+    className="flex items-center justify-between w-full p-4 bg-[#0B0D10] border border-[#1F2228] rounded-xl hover:bg-[#1A1D23] hover:border-orange-500/50 transition-all group"
+  >
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-orange-500/10 rounded-lg text-orange-500">
+        <Archive size={20} />
+      </div>
+      <div className="text-left">
+        <p className="text-[11px] font-black uppercase tracking-[0.1em] text-gray-400 group-hover:text-orange-500 transition-colors">
+          Archived
+        </p>
+        <p className="text-xs text-gray-500 font-medium">View Archived Content</p>
+      </div>
+    </div>
+    <ChevronRight size={18} className="text-gray-600 group-hover:text-white transition-colors" />
+  </Link>
+  <Link 
+    href="/user/pinned" 
+    className="flex items-center justify-between w-full p-4 bg-[#0B0D10] border border-[#1F2228] rounded-xl hover:bg-[#1A1D23] hover:border-orange-500/50 transition-all group"
+  >
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-orange-500/10 rounded-lg text-orange-500">
+        <PinIcon size={20} />
+      </div>
+      <div className="text-left">
+        <p className="text-[11px] font-black uppercase tracking-[0.1em] text-gray-400 group-hover:text-orange-500 transition-colors">
+          Pinned
+        </p>
+        <p className="text-xs text-gray-500 font-medium">View Pinned Content</p>
+      </div>
+    </div>
+    <ChevronRight size={18} className="text-gray-600 group-hover:text-white transition-colors" />
+  </Link>
       </aside>
 
       {/* --- MODALS --- */}

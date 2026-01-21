@@ -2,10 +2,8 @@ import axios from "axios";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export async function POST(req: Request) {
+export async function GET() {
   try {
-    // 1️⃣ Read body
-    const body = await req.json();
 
     // 2️⃣ Read access token from cookies
     const cookieStore = await cookies();
@@ -17,11 +15,9 @@ export async function POST(req: Request) {
         { status: 401 }
       );
     }
+    const response = await axios.get(
+"http://localhost:8003/api/my-archived-announcements/",
 
-    // 3️⃣ Forward request to backend
-    const response = await axios.post(
-      "http://127.0.0.1:8003/api/announcements/add/",
-      body,
       {
         headers: {
           Authorization: `Bearer ${access}`,
@@ -36,13 +32,9 @@ export async function POST(req: Request) {
     });
 
   } catch (error: any) {
-    console.error(
-      "Announcement Add Proxy Error:",
-      error.response?.data || error.message
-    );
 
     return NextResponse.json(
-      { error: error.response?.data || "Failed to add announcement" },
+      { error: error.response?.data || "Failed to fetch archived announcement" },
       { status: error.response?.status || 500 }
     );
   }

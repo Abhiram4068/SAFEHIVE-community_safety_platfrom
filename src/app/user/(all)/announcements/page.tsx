@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
-import { MoreHorizontal, Plus, Search, Share2, Pin, Home } from 'lucide-react';
+import { Plus, Search, Pin, Home, MessageCircle } from 'lucide-react'; // Added MessageCircle
 
 type AnnouncementType = {
   id: number;
@@ -11,10 +11,17 @@ type AnnouncementType = {
   content: string;
   created_at: string;
   is_pinned?: boolean;
+  is_owner: boolean; 
+};
+
+type UserType = {
+  id: number;
+  name: string;
 };
 
 export default function AnnouncementsListPage() {
   const [announcements, setAnnouncements] = useState<AnnouncementType[]>([]);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,6 +29,11 @@ export default function AnnouncementsListPage() {
     try {
       setLoading(true);
       setError(null);
+      
+      // In a real app, you'd fetch the user from your auth session (e.g., NextAuth or an API)
+      // Mocking user ID 1 for this example
+     
+
       const response = await axios.get('/api/announcements');
       setAnnouncements(response.data);
     } catch (error) {
@@ -36,19 +48,20 @@ export default function AnnouncementsListPage() {
     fetchData();
   }, []);
 
-async function handleSave(postId: number) {
-  if (!postId) return;
-  try {
-    const res = await axios.patch(`/api/announcements/${postId}/pin/`);
-    const { pinned } = res.data;
-    
-    setAnnouncements((prev) =>
-      prev.map((p) => p.id === postId ? { ...p, is_pinned: pinned } : p)
-    );
-  } catch (err) {
-    console.error("Save toggle failed", err);
+  async function handleSave(postId: number) {
+    if (!postId) return;
+    try {
+      const res = await axios.patch(`/api/announcements/${postId}/pin/`);
+      const { pinned } = res.data;
+      
+      setAnnouncements((prev) =>
+        prev.map((p) => p.id === postId ? { ...p, is_pinned: pinned } : p)
+      );
+    } catch (err) {
+      console.error("Save toggle failed", err);
+    }
   }
-}
+
   return (
     <div className="flex-1 w-full lg:max-w-4xl mx-auto pb-10 px-4">
       {/* SEARCH AND NAVIGATION HEADER */}
@@ -107,24 +120,34 @@ async function handleSave(postId: number) {
               <div className="text-[#E4E6EB] text-[15px] leading-relaxed whitespace-pre-wrap">{post.content}</div>
             </div>
 
-            <div className="flex items-center gap-1 mt-6 pt-2 border-t border-[#2D2F34]">
+            <div className="flex items-center gap-4 mt-6 pt-2 border-t border-[#2D2F34]">
+              {/* PIN BUTTON */}
               <button
                 onClick={() => handleSave(post.id)}
-                className={`flex items-center gap-2 px-3 transition  ${post?.is_pinned ? " text-blue-500" : " text-[#838891] hover:text-white"}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition hover:bg-[#2D2F34] ${post?.is_pinned ? " text-blue-500" : " text-[#838891] hover:text-white"}`}
               >
                 <Pin
                   className={`w-4 h-4 ${
                     post.is_pinned
                       ? "text-yellow-400 fill-yellow-400"
-                      : "group-hover:text-white"
+                      : ""
                   }`}
                 />
-                <span className="text-xs font-bold group-hover:text-white">
+                <span className="text-xs font-bold">
                   {post.is_pinned ? "Pinned" : "Pin"}
                 </span>
               </button>
 
-              
+              {/* ENQUIRE BUTTON: Only shows if the current user is NOT the author */}
+             {!post.is_owner && (
+  <Link
+    href={`/user/messages/new?announcementId=${post.id}`}
+    className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[#838891] hover:text-white hover:bg-[#2D2F34] transition"
+  >
+    <MessageCircle className="w-4 h-4" />
+    <span className="text-xs font-bold">Enquire</span>
+  </Link>
+)}
             </div>
           </article>
         ))}
