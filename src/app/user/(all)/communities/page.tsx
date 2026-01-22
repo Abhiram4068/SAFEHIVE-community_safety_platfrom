@@ -56,7 +56,6 @@ export default async function TopCommunities() {
 
             <section className="mb-4 px-2">
                 <div className="flex items-center gap-2">
-                    <span className="text-xl">🚀</span>
                     <h2 className="text-white text-lg font-bold">Top Communities</h2>
                 </div>
             </section>

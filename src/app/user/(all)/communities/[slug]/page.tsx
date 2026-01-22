@@ -127,8 +127,7 @@ export default function CommunityPage({ params }: { params: Promise<{ slug: stri
           >
             <ShieldCheck className="w-4 h-4" /> {isMember ? "Joined" : "Join"}
           </button>
-          <button className="p-2 border border-[#343536] rounded-full text-white hover:bg-[#1A1A1B] transition"><Bell className="w-5 h-5" /></button>
-          <button className="p-2 border border-[#343536] rounded-full text-white hover:bg-[#1A1A1B] transition"><MoreHorizontal className="w-5 h-5" /></button>
+          
         </div>
       </div>
 
@@ -149,19 +148,7 @@ export default function CommunityPage({ params }: { params: Promise<{ slug: stri
         </div>
 
         {/* RIGHT COLUMN: SIDEBAR WIDGETS */}
-        <div className="hidden lg:flex flex-col gap-4">
-          <div className="bg-[#1A1A1B] rounded-lg p-4 border border-[#343536]">
-            <h3 className="text-[#818384] text-xs font-bold uppercase mb-4">About</h3>
-            <p className="text-[#D7DADC] text-sm mb-4 leading-relaxed">
-              Official announcements from Reddify, Inc.
-            </p>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-white text-sm"><Users className="w-4 h-4" /> 3 members</div>
-              <div className="flex items-center gap-2 text-white text-sm"><FileText className="w-4 h-4" /> 4 posts</div>
-              <div className="flex items-center gap-2 text-white text-sm"><Clock className="w-4 h-4" /> Created a year ago</div>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </div>
   );
