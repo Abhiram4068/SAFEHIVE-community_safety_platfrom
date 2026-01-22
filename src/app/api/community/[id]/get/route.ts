@@ -25,7 +25,7 @@ export async function GET(
       }
     );
 
-    console.log("BACKEND RESPONSE:", res.data);
+ 
 
     return NextResponse.json(res.data);
   } catch (err: any) {

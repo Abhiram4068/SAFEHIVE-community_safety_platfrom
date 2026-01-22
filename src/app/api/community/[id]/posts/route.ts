@@ -7,6 +7,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+        const { id } = await params; 
     const cookieStore = await cookies(); // ❗ NOT async
     const access = cookieStore.get("access")?.value;
 
@@ -18,7 +19,7 @@ export async function GET(
     }
 
     const res = await axios.get(
-      `http://127.0.0.1:8005/api/group/${params.id}/posts/`,
+      `http://127.0.0.1:8005/api/group/${id}/posts/`,
       {
         headers: {
           Authorization: `Bearer ${access}`,
