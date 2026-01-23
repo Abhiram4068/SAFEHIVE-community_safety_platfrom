@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const formData = await req.formData();
 
     const res = await axios.post(
-      "http://127.0.0.1:8001/media/upload/",
+      "http://127.0.0.1:8006/media/upload/",
       formData,
       {
         headers: {

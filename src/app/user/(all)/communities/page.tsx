@@ -7,12 +7,12 @@ type CommunityType = {
     id: number;
     name: string;
     description?: string;
-    icon?: string;
+    image?: string;
     color?: string;
     member_count?: number;
     post_count?: number;
 }
-
+const MEDIA_BASE_URL = "http://127.0.0.1:8005";
 export default async function TopCommunities() {
     let communities: CommunityType[] = [];
 
@@ -56,7 +56,6 @@ export default async function TopCommunities() {
 
             <section className="mb-4 px-2">
                 <div className="flex items-center gap-2">
-                    <span className="text-xl">🚀</span>
                     <h2 className="text-white text-lg font-bold">Top Communities</h2>
                 </div>
             </section>
@@ -82,17 +81,29 @@ export default async function TopCommunities() {
 }
 
 function CommunityRow({ community, rank }: { community: CommunityType, rank: number }) {
-    const { id, name, description, icon, color } = community;
+    const { id, name, description, image, color } = community;
     
     return (
         <Link href={`/communityinfo/${id}`}>
             <div className="flex items-center gap-4 py-4 px-2 border-b border-[#1F2228] hover:bg-[#1A1D23]/50 transition-colors group">
-                {/* RANK & ICON */}
+                {/* RANK & image */}
                 <div className="flex items-center gap-4 min-w-[70px]">
                     <span className="text-[#838891] font-medium text-sm w-4 text-center">{rank}</span>
-                    <div className={`${color || 'bg-blue-600'} w-9 h-9 rounded-full flex items-center justify-center text-base shadow-inner shrink-0`}>
-                        {icon || name.charAt(0).toUpperCase()}
-                    </div>
+                    <div
+  className={`${color || "bg-blue-600"} w-9 h-9 rounded-full overflow-hidden flex items-center justify-center shadow-inner shrink-0`}
+>
+{image ? (
+  <img
+    src={`${MEDIA_BASE_URL}${image}`}
+    alt={name}
+    className="w-full h-full object-cover"
+  />
+) : (
+  <span className="text-white font-bold">
+    {name.charAt(0).toUpperCase()}
+  </span>
+)}
+</div>
                 </div>
 
                 {/* INFO */}
