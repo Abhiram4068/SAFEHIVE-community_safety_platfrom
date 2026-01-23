@@ -100,7 +100,7 @@ function CommunityCard({ id, name, description, icon }: { id: number, name: stri
   return (
     <div className="bg-[#15191C] border border-[#2D2F34] rounded p-6 flex flex-col h-full hover:border-[#3e4147] transition-all">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-[#1A1D23] shadow-inner">
+        <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl  shadow-inner">
           {icon}
         </div>
         <h3 className="text-white font-bold text-lg hover:underline cursor-pointer">{name}</h3>
@@ -110,7 +110,7 @@ function CommunityCard({ id, name, description, icon }: { id: number, name: stri
         {description}
       </p>
 
-      <Link href={`/categories/${id}`}>
+      <Link href={`/user/categories/${id}`}>
         <button className="w-fit bg-[#2D2F34] hover:bg-[#3E4147] text-[#E4E6EB] px-6 py-1.5 rounded-full font-bold text-sm transition self-start">
           See Posts
         </button>

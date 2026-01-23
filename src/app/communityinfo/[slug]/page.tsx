@@ -461,7 +461,7 @@ const handleDeleteAnnouncement = async (annId: number) => {
 
         <div className="flex flex-col gap-4">
           <AboutWidget communityDescription={communityDescription} membersCount={members.length} communityName={communityName} />
-          <WelcomeWidget communityName={communityName} groupId={groupId}/>
+          <WelcomeWidget communityName={communityName} groupId={groupId} isJoined={isJoined} setIsModalOpen={setIsModalOpen}/>
         </div>
       </div>
     </div>
@@ -485,14 +485,24 @@ function AboutWidget({ communityDescription, membersCount, communityName }: any)
   );
 }
 
-function WelcomeWidget({ communityName, groupId }: any) {
+function WelcomeWidget({ communityName, groupId, isJoined , setIsModalOpen}: any) {
   return (
     <div className="bg-[#0B0D10] border border-[#343536] rounded-lg p-4">
       <h3 className="text-white font-bold mb-3 ">Post Something inside</h3>
       <p className="text-[#818384] text-xs mb-3">Share an update, or note that will be visible to all community members.</p>
-      <Link href={`/communityinfo/${groupId}/addpost`} className="block w-full bg-[#D7DADC] py-2 rounded-full text-black font-bold text-sm text-center hover:bg-white transition">
+      { isJoined?
+        (<Link href={`/communityinfo/${groupId}/addpost`} className="block w-full bg-[#D7DADC] py-2 rounded-full text-black font-bold text-sm text-center hover:bg-white transition">
         Create Post
-      </Link>
+      </Link>):(
+        <button
+ onClick={() => setIsModalOpen(true)}
+  className="block w-full bg-[#D7DADC] py-2 rounded-full text-black font-bold text-sm text-center hover:bg-white transition"
+>
+  Join The Community to Share Posts
+</button>
+      )
+      }
+      
     </div>
   );
 }
