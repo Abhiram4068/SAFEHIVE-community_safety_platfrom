@@ -22,9 +22,7 @@ const PUBLICFEED = [
   { emoji: '🚨', label: 'Category', path: '/categories' },
   { emoji: '💬', label: 'Browse Communities', path: '/communities' },
   { emoji: '🆘', label: 'Public Announcements', path: '/announcements' },
-  { emoji: '#️⃣', label: 'Hashtags', path: '/hashtags' },
-  { emoji: '📊', label: 'Reports & Stats', path: '/stats' },
-  { emoji: '⚙️', label: 'Settings', path: '/settings' },
+,
 ];
 
 const USERFEED = [
@@ -34,9 +32,9 @@ const USERFEED = [
   { emoji: '🚨', label: 'Category', path: '/user/categories' },
   { emoji: '💬', label: 'Browse Communities', path: '/user/communities' },
   { emoji: '🆘', label: 'Public Announcements', path: '/user/announcements' },
-  { emoji: '#️⃣', label: 'Hashtags', path: '/user/hashtags' },
-  { emoji: '📊', label: 'Reports & Stats', path: '/user/stats' },
-  { emoji: '⚙️', label: 'Settings', path: '/user/settings' },
+{ emoji: '🏛️', label: 'Platform Announcements', path: '/user/admin-announcements' },
+
+
 ];
 
 interface SidebarProps {
