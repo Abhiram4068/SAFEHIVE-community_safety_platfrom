@@ -8,9 +8,11 @@ import {
   X, MessageSquare, ArrowBigUp, CheckCircle, Clock, User 
 } from "lucide-react";
 import { Montserrat } from 'next/font/google';
+import { useRouter } from "next/navigation";
 
 const POST_SERVICE_URL = "http://127.0.0.1:8000";
 const MEDIA_SERVICE_URL = "http://127.0.0.1:8006";
+const COMMENT_SERVICE_URL = "http://127.0.0.1:8008";
 const montserrat = Montserrat({ 
   subsets: ['latin'],
   weight: ['400', '500', '700'],
@@ -18,19 +20,19 @@ const montserrat = Montserrat({
 });
 
 // PRESET EMOJIS
-const PRESET_REACTIONS = [
-  { label: "Helpful", emoji: "👍", key: "helpful" },
-  { label: "Urgent", emoji: "🚨", key: "urgent" },
-  { label: "Angry", emoji: "😡", key: "angry" },
-  { label: "Support", emoji: "🙏", key: "support" },
-];
+
 
 export default function Home() {
+  const router = useRouter();
+  const [commentText, setCommentText] = useState("");
+  const [postingComment, setPostingComment] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState<any[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
   const [selectedPost, setSelectedPost] = useState<any | null>(null);
 
-  // YOUR REACTION LOGIC (New addition, doesn't touch your other handlers)
+  // YOUR REACTION LOGIC
   const handleReaction = async (postId: number, reactionKey: string) => {
     try {
       const res = await axios.post(`${POST_SERVICE_URL}/api/post/${postId}/react/`, { 
@@ -61,31 +63,56 @@ export default function Home() {
     }
   };
 
-  // YOUR SAVED LOGIC (UNTOUCHED)
+  const handleSubmit = async () => {
+    if (!commentText.trim() || !selectedPost?.id) return;
+
+    try {
+      setPostingComment(true);
+
+      const res = await axios.post(
+        "/api/comment",
+        {
+          post_id: selectedPost.id,
+          comment_text: commentText,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      // Optimistic UI update
+      setComments((prev) => [res.data, ...prev]);
+      setCommentText("");
+    } catch (err) {
+      console.error("Failed to post comment", err);
+    } finally {
+      setPostingComment(false);
+    }
+  };
+
   const handleHelpful = async (postId: number) => {
     try {
-      const res = await axios.patch(`${POST_SERVICE_URL}/api/post/${postId}/helpful/`);
-      const { helpful } = res.data;
-      const updatePosts = (list: any[]) =>
-        list.map((p) =>
+      const res = await axios.patch(`/api/post/${postId}/helpful/`);
+
+      const { helpful, helpful_count } = res.data;
+
+      setPosts((prev) =>
+        prev.map((p) =>
           p.id === postId
             ? {
                 ...p,
                 is_helpful: helpful,
-                helpful_count: helpful
-                  ? (p.helpful_count || 0) + 1
-                  : Math.max((p.helpful_count || 1) - 1, 0),
+                helpful_count: helpful_count,
               }
             : p
-        );
-      setPosts((prev) => updatePosts(prev));
+        )
+      );
+
       if (selectedPost?.id === postId) {
         setSelectedPost((prev: any) => ({
           ...prev,
           is_helpful: helpful,
-          helpful_count: helpful
-            ? (prev.helpful_count || 0) + 1
-            : Math.max((prev.helpful_count || 1) - 1, 0),
+          helpful_count: helpful_count,
         }));
       }
     } catch (err) {
@@ -93,7 +120,7 @@ export default function Home() {
     }
   };
 
-  // YOUR SAVE LOGIC (UNTOUCHED)
+  // YOUR SAVE LOGIC
   const handleSave = async (postId: number) => {
     if (!postId) return;
     try {
@@ -142,6 +169,23 @@ export default function Home() {
 
   useEffect(() => { fetchAllData(); }, []);
 
+  useEffect(() => {
+    if (selectedPost?.id) {
+      const fetchComments = async () => {
+        setLoadingComments(true);
+        try {
+          const res = await axios.get(`${COMMENT_SERVICE_URL}/api/post/${selectedPost.id}/comments/`);
+          setComments(res.data);
+        } catch (err) {
+          console.error("Failed to fetch comments", err);
+        } finally {
+          setLoadingComments(false);
+        }
+      };
+      fetchComments();
+    }
+  }, [selectedPost?.id]);
+
   return (
     <div className="flex-1 w-full lg:max-w-2xl mx-auto pb-10 px-4 bg-[#0D0F12] min-h-screen text-white">
       <br />
@@ -178,31 +222,31 @@ export default function Home() {
         ) : posts.map((post) => (
           <div key={post.id} className="relative border border-[#1F2228] rounded-xl overflow-hidden bg-[#16181D]">
             <div className="absolute top-4 right-4 z-10">
-              <button 
-                onClick={() => setSelectedPost(post)}
-                className="flex items-center gap-1 text-[11px] font-bold uppercase text-[#838891] hover:text-white transition bg-black/40 px-2 py-1 rounded-md"
-              >
-                inspect <ExternalLink size={12} />
-              </button>
+  <button
+  onClick={() => router.push(`/user/post/${post.id}/`)}
+  className="flex items-center gap-1 text-[11px] font-bold uppercase text-[#838891] hover:text-white transition bg-black/40 px-2 py-1 rounded-md"
+>
+  inspect <ExternalLink size={12} />
+</button>
             </div>
             <PostCard
-              subreddit={post.category_name || "Community"}
-              author={post.display_name}
+              display_name={post.display_name}
               time={new Date(post.created_at).toLocaleDateString()}
               title={post.title}
               content={post.caption}
               location={post.location_name || 'Global'}              
-              latitude={post.latitude}
-              longitude={post.longitude}
+              
               imageUrl={post.media?.[0]?.displayUrl || null}
               votes={post.vote_count || 0}
-              commentsCount={post.comment_count || 0}
               accentColor={post.priority === "high" ? "bg-red-500" : "bg-blue-500"}
             />
             
-            {/* YOUR ORIGINAL ACTIONS (UNTOUCHED) */}
             <div className="flex items-center justify-between px-4 pb-2 -mt-2">
               <div className="flex items-center gap-4">
+                <button  onClick={() => router.push(`/user/post/${post.id}/`)} className="flex items-center gap-1 text-sm text-[#838891] hover:text-blue-400 transition">
+                  <MessageSquare size={16} />
+                  <span>View Comments</span>
+                </button>
                 <button 
                   onClick={() => handleHelpful(post.id)}
                   className={`flex items-center gap-1 text-sm transition ${post.is_helpful ? "text-green-500" : "text-[#838891] hover:text-green-400"}`}
@@ -210,6 +254,10 @@ export default function Home() {
                   <CheckCircle size={16} fill={post.is_helpful ? "currentColor" : "none"} fillOpacity={0.2} />
                   <span>Helpful</span>
                 </button>
+
+                {/* --- ADDED HELP COUNT HERE --- */}
+                
+
                 <button 
                   onClick={() => handleSave(post.id)}
                   className={`flex items-center gap-1 text-sm transition ${post.is_saved ? "text-blue-500" : "text-[#838891] hover:text-blue-400"}`}
@@ -218,26 +266,9 @@ export default function Home() {
                   <span>{post.is_saved ? "Saved" : "Save"}</span>
                 </button>
               </div>
-              <div className="text-[11px] text-[#5c6066] italic">{post.helpful_count || 0} found this helpful</div>
             </div>
 
-            {/* REACTION ROW ADDED BELOW */}
-            <div className="flex items-center gap-2 px-4 pb-4">
-              {PRESET_REACTIONS.map((reac) => (
-                <button
-                  key={reac.key}
-                  onClick={() => handleReaction(post.id, reac.key)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border transition-all text-[11px] font-bold ${
-                    post.user_reaction === reac.key 
-                    ? "bg-blue-500/20 border-blue-500 text-blue-400" 
-                    : "bg-[#1A1D23] border-[#2F333A] text-[#838891] hover:border-[#40444b]"
-                  }`}
-                >
-                  <span>{reac.emoji}</span>
-                  <span>{post.reaction_counts?.[reac.key] || 0}</span>
-                </button>
-              ))}
-            </div>
+           
           </div>
         ))}
       </div>
@@ -270,42 +301,71 @@ export default function Home() {
                     {selectedPost?.priority || "Normal"} Priority
                   </span>
                   <div className="flex flex-col leading-tight mr-2">
-    <span className="text-blue-500 font-bold text-xs flex items-center gap-1">
-      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
-      </svg>
-      {selectedPost.location_name || "Unknown Location"}
-    </span>
-    <span className="text-[9px] font-mono opacity-60 ml-4">
-      {selectedPost.latitude?.toFixed(4)}°, {selectedPost.longitude?.toFixed(4)}°
-    </span>
-  </div>
+                    <span className="text-blue-500 font-bold text-xs flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+                      </svg>
+                      {selectedPost.location_name || "Unknown Location"}
+                    </span>
+                    <span className="text-[9px] font-mono opacity-60 ml-4">
+                      {selectedPost.latitude?.toFixed(4)}°, {selectedPost.longitude?.toFixed(4)}°
+                    </span>
+                  </div>
                 </div>
-
-                
 
                 <h1 className="text-3xl font-extrabold mb-4 text-white">{selectedPost?.title}</h1>
                 <p className="text-gray-300 mb-8">{selectedPost?.caption}</p>
 
-                {/* MODAL REACTION SELECTOR */}
                 <div className="mb-8">
                   <p className="text-[10px] font-bold uppercase text-[#5c6066] mb-3 tracking-widest">How do you feel about this?</p>
-                  <div className="flex flex-wrap gap-2">
-                    {PRESET_REACTIONS.map((reac) => (
+       
+                </div>
+
+                <div className="border-t border-[#2F333A] pt-8 mb-4">
+                  <h3 className="text-xs font-bold uppercase text-[#838891] mb-6 flex items-center gap-2 tracking-widest">
+                    <MessageSquare size={14} />{comments.length} comment(s)
+                  </h3>
+
+                  <div className="mb-8">
+                    <textarea
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder="Share your thoughts or updates..."
+                      className="w-full bg-[#16181D] border border-[#2F333A] rounded-xl p-4 text-sm text-gray-300 focus:outline-none focus:border-blue-500 transition resize-none placeholder:text-[#5c6066]"
+                      rows={3}
+                    />
+                    <div className="flex justify-end mt-2">
                       <button
-                        key={reac.key}
-                        onClick={() => handleReaction(selectedPost.id, reac.key)}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
-                          selectedPost.user_reaction === reac.key 
-                          ? "bg-blue-600 border-blue-400 text-white" 
-                          : "bg-[#16181D] border-[#2F333A] text-gray-400 hover:border-gray-500"
-                        }`}
+                        onClick={handleSubmit}
+                        disabled={postingComment}
+                        className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold py-2 px-6 rounded-full transition shadow-lg"
                       >
-                        <span>{reac.emoji}</span>
-                        <span className="font-bold text-xs">{reac.label}</span>
-                        <span className="opacity-50 text-[10px]">{selectedPost.reaction_counts?.[reac.key] || 0}</span>
+                        {postingComment ? "Posting..." : "Post Comment"}
                       </button>
-                    ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    {loadingComments ? (
+                      <div className="flex justify-center py-4"><Loader2 className="animate-spin text-blue-500" /></div>
+                    ) : (
+                      comments.map((c: any) => (
+                        <div key={c.id} className="flex gap-4 group">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-900 to-black border border-[#2F333A] flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-blue-400">
+                            U
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-xs font-bold text-white">User_{c.user_id}</p>
+                              <span className="text-[10px] text-[#5c6066]">just now</span>
+                            </div>
+                            <p className="text-sm text-gray-400 leading-relaxed bg-[#16181D] p-3 rounded-2xl rounded-tl-none border border-[#2F333A]/50">
+                              {c.comment_text}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>

@@ -8,14 +8,18 @@ import {
   X, MessageSquare, ArrowBigUp, CheckCircle 
 } from "lucide-react";
 import { Montserrat } from 'next/font/google';
+import { useRouter } from "next/navigation";
+
 const POST_SERVICE_URL = "http://127.0.0.1:8000";
 const MEDIA_SERVICE_URL = "http://127.0.0.1:8006";
+const COMMENT_SERVICE_URL = "http://127.0.0.1:8008";
 const montserrat = Montserrat({ 
   subsets: ['latin'],
   weight: ['400', '500', '700'],
   variable: '--font-montserrat',
 });
 export default function Home() {
+    const router = useRouter();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<any | null>(null);
@@ -60,7 +64,7 @@ export default function Home() {
       const fetchComments = async () => {
         setLoadingComments(true);
         try {
-          const res = await axios.get(`${POST_SERVICE_URL}/api/post/${selectedPost.id}/comments/`);
+          const res = await axios.get(`${COMMENT_SERVICE_URL}/api/post/${selectedPost.id}/comments/`);
           setComments(res.data);
         } catch (err) {
           console.error("Failed to fetch comments", err);
@@ -128,7 +132,7 @@ export default function Home() {
           />
         </div>
       </div>
- <div className={`max-w-xl mx-auto mb-8 px-2 text-center ${montserrat.className}`}>
+      <div className={`max-w-xl mx-auto mb-8 px-2 text-center ${montserrat.className}`}>
         <p className="text-[#838891] text-sm tracking-wide">
           You are seeing all reported issues.{" "}
           <a href="/login/">
@@ -153,10 +157,11 @@ export default function Home() {
                   inspect <ExternalLink size={12} />
                 </button>
               </div>
+
               <PostCard
                 id={post.id}
                 subreddit={post.category_name || "Community"}
-                author={`User_${post.user_id}`}
+                display_name={`User_${post.user_id}`}
                 time={new Date(post.created_at).toLocaleDateString()}
                 title={post.title}
                 content={post.caption}
@@ -165,12 +170,22 @@ export default function Home() {
                 commentsCount={post.comment_count || 0}
                 accentColor={post.priority === "high" ? "bg-red-500" : "bg-blue-500"}
               />
+              
               <div className="flex items-center justify-between px-4 pb-4 -mt-2">
+                
                 <div className="flex items-center gap-4">
+                                  {/* Comment Button Added Here */}
+                  <button onClick={() => setSelectedPost(post)} className="flex items-center gap-1 text-sm text-[#838891] hover:text-blue-400 transition">
+                    <MessageSquare size={16} />
+                    <span>{post.comment_count}Comment</span>
+                  </button>
                   <button onClick={() => handleHelpful(post.id)} className={`flex items-center gap-1 text-sm transition ${post.is_helpful ? "text-green-500" : "text-[#838891] hover:text-green-400"}`}>
                     <CheckCircle size={16} fill={post.is_helpful ? "currentColor" : "none"} fillOpacity={0.2} />
                     <span>Helpful</span>
                   </button>
+
+  
+
                   <button onClick={() => handleSave(post.id)} className={`flex items-center gap-1 text-sm transition ${post.is_saved ? "text-yellow-500" : "text-[#838891] hover:text-yellow-400"}`}>
                     <Bookmark size={16} fill={post.is_saved ? "currentColor" : "none"} />
                     <span>{post.is_saved ? "Saved" : "Save"}</span>
@@ -183,68 +198,133 @@ export default function Home() {
       </div>
 
       {/* MODAL SECTION */}
-      {selectedPost && (
+     {selectedPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
-          <div className="bg-[#1A1D23] w-full max-w-6xl h-[85vh] flex flex-col md:flex-row overflow-hidden rounded-2xl border border-[#2F333A] relative">
+          <div className="bg-[#1A1D23] w-full max-w-6xl h-[85vh] flex flex-col md:flex-row overflow-hidden rounded-2xl border border-[#2F333A] shadow-2xl relative">
             
-            {/* LEFT: Media Gallery */}
-            <div className="flex-[1.2] bg-black flex flex-col overflow-y-auto border-r border-[#2F333A] [scrollbar-width:none]">
-              {selectedPost.media?.length > 0 ? (
-                selectedPost.media.map((item: any, idx: number) => (
-                  <img key={idx} src={item.displayUrl} alt="media" className="w-full object-contain mb-1" />
-                ))
+            <div className="flex-[1.2] bg-black flex flex-col overflow-y-auto [scrollbar-width:none] border-r border-[#2F333A]">
+              {selectedPost?.media && selectedPost.media.length > 0 ? (
+                <div className="flex flex-col h-full">
+                  {selectedPost.media.map((item: any, idx: number) => (
+                    <div key={idx} className="w-full h-full flex justify-center items-center bg-black">
+                      <img src={item.displayUrl} alt="Post content" className="max-h-full max-w-full object-contain" />
+                    </div>
+                  ))}
+                </div>
               ) : (
-                <div className="h-full flex items-center justify-center text-[#5c6066]">No Media</div>
+                <div className="h-full flex flex-col items-center justify-center text-[#5c6066] gap-2">
+                  <ExternalLink size={24} className="opacity-20" />
+                  <p className="text-sm font-medium">No media attached</p>
+                </div>
               )}
             </div>
-      
-            {/* RIGHT: Scrollable Details + Comments */}
-            <div className="flex-1 flex flex-col h-full bg-[#1A1D23]">
-              <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                <h1 className="text-3xl font-extrabold mb-6">{selectedPost.title}</h1>
-                <p className="text-gray-300 text-lg mb-12">{selectedPost.caption}</p>
 
-                {/* Comments Section */}
-                <div className="border-t border-[#2F333A] pt-8">
-                  <h3 className="text-xs font-bold uppercase text-[#838891] mb-6 flex items-center gap-2">
+            <div className="flex-1 flex flex-col h-full bg-[#1A1D23] overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-8 [scrollbar-width:none]">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest ${selectedPost?.priority === "high" ? "bg-red-500/10 text-red-500 border border-red-500/20" : "bg-blue-500/10 text-blue-400 border border-blue-500/20"}`}>
+                    {selectedPost?.priority || "Normal"} Priority
+                  </span>
+                  <div className="flex flex-col leading-tight mr-2">
+                    <span className="text-blue-500 font-bold text-xs flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+                      </svg>
+                      {selectedPost.location_name || "Unknown Location"}
+                    </span>
+                    <span className="text-[9px] font-mono opacity-60 ml-4">
+                      {selectedPost.latitude?.toFixed(4)}°, {selectedPost.longitude?.toFixed(4)}°
+                    </span>
+                  </div>
+                </div>
+
+                <h1 className="text-3xl font-extrabold mb-4 text-white">{selectedPost?.title}</h1>
+                <p className="text-gray-300 mb-8">{selectedPost?.caption}</p>
+
+                {/* MODAL REACTION SELECTOR */}
+               
+
+                {/* --- START OF NEW COMMENTS SECTION --- */}
+                <div className="border-t border-[#2F333A] pt-8 mb-4">
+                  <h3 className="text-xs font-bold uppercase text-[#838891] mb-6 flex items-center gap-2 tracking-widest">
                     <MessageSquare size={14} /> Discussion
                   </h3>
+
+                  {/* Post Comment Box */}
+                  <div className="mb-8">
+                    <textarea 
+                      placeholder="Share your thoughts or updates..."
+                      className="w-full bg-[#16181D] border border-[#2F333A] rounded-xl p-4 text-sm text-gray-300 focus:outline-none focus:border-blue-500 transition resize-none placeholder:text-[#5c6066]"
+                      rows={3}
+                    />
+                    <div className="flex justify-end mt-2">
+                      <button 
+                        onClick={() => router.push("/login")}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-6 rounded-full transition shadow-lg"
+                      >
+                        Login to post a comment
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Comments List */}
                   <div className="space-y-6">
-                    {loadingComments ? <Loader2 className="animate-spin" /> : 
+                    {loadingComments ? (
+                      <div className="flex justify-center py-4"><Loader2 className="animate-spin text-blue-500" /></div>
+                    ) : (
                       comments.map((c: any) => (
-                        <div key={c.id} className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-900 flex-shrink-0" />
-                          <div>
-                            <p className="text-sm font-bold">User_{c.user_id}</p>
-                            <p className="text-sm text-gray-400">{c.comment_text}</p>
+                        <div key={c.id} className="flex gap-4 group">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-900 to-black border border-[#2F333A] flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-blue-400">
+                            U
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-xs font-bold text-white">User_{c.user_id}</p>
+                              <span className="text-[10px] text-[#5c6066]">just now</span>
+                            </div>
+                            <p className="text-sm text-gray-400 leading-relaxed bg-[#16181D] p-3 rounded-2xl rounded-tl-none border border-[#2F333A]/50">
+                              {c.comment_text}
+                            </p>
                           </div>
                         </div>
                       ))
-                    }
+                    )}
                   </div>
                 </div>
+                {/* --- END OF NEW COMMENTS SECTION --- */}
               </div>
-      
-              {/* Footer Actions */}
-              <div className="p-6 bg-[#16181D] border-t border-[#2F333A]">
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-2 bg-[#1A1D23] px-4 py-2 rounded-xl border border-[#2F333A]">
-                    <ArrowBigUp className="text-orange-500" />
-                    <span className="font-bold">{selectedPost.vote_count || 0}</span>
-                  </div>
-                  <div className="flex gap-3">
-                    <button onClick={() => handleSave(selectedPost.id)} className="px-4 py-2 rounded-xl border border-[#2F333A]">
-                      {selectedPost.is_saved ? "Saved" : "Save"}
+
+              <div className="p-6 bg-[#16181D]/50 border-t border-[#2F333A] backdrop-blur-md">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <button className="flex items-center gap-2 bg-[#1A1D23] px-4 py-2 rounded-xl border border-[#2F333A]">
+                      <ArrowBigUp size={20} className="text-orange-500" />
+                      <span className="font-bold text-sm text-white">{selectedPost?.vote_count || 0}</span>
                     </button>
-                    <button onClick={() => handleHelpful(selectedPost.id)} className="bg-white text-black px-6 py-2 rounded-xl font-bold">
-                      {selectedPost.is_helpful ? "Helpful" : "Mark Helpful"}
+                    
+                    <button 
+                      onClick={() => handleSave(selectedPost.id)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl transition border ${selectedPost?.is_saved ? "bg-blue-500/10 border-blue-500 text-blue-500" : "bg-[#1A1D23] border-[#2F333A] text-[#838891] hover:text-white"}`}
+                    >
+                      <Bookmark size={18} fill={selectedPost?.is_saved ? "currentColor" : "none"} />
+                      <span className="text-sm font-bold">{selectedPost?.is_saved ? "Saved" : "Save"}</span>
                     </button>
                   </div>
+
+                  <button 
+                    onClick={() => handleHelpful(selectedPost?.id)}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl transition font-bold border text-sm ${
+                      selectedPost?.is_helpful ? "bg-green-600 border-green-500 text-white" : "bg-white text-black"
+                    }`}
+                  >
+                    <CheckCircle size={18} fill={selectedPost?.is_helpful ? "white" : "none"} />
+                    {selectedPost?.is_helpful ? "Helpful" : "Mark as Helpful"}
+                  </button>
                 </div>
               </div>
             </div>
 
-            <button onClick={() => setSelectedPost(null)} className="absolute top-4 right-4 p-2 bg-black/40 rounded-full">
+            <button onClick={() => setSelectedPost(null)} className="absolute top-4 right-4 z-50 p-2.5 bg-black/40 text-white rounded-full transition border border-white/10">
               <X size={20} />
             </button>
           </div>
