@@ -105,7 +105,7 @@ const response = await fetch(
                 <PostCard 
                     key={post.id || index} 
                     subreddit={post.category_id || "local"}
-                    author={`user_${post.user_id}`}
+                    display_name={`user_${post.display_name}`}
                     time={new Date(post.created_at).toLocaleDateString()}
                     locationdistance={`${post.distance} km away`}
                     location={post.location_name}
