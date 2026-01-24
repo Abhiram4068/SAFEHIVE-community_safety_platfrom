@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Trash2, AlertTriangle } from 'lucide-react';
+import { Trash2, AlertTriangle, MapPin } from 'lucide-react';
 
 interface PostProps {
   id: string | number;
   display_name: string;
   time: string;
   location?: string;  
-  latitude: string,
-  longitude: string,
+  latitude: string;
+  longitude: string;
   locationdistance: string;  
   title: string;
   content?: string;
@@ -20,10 +20,11 @@ interface PostProps {
 }
 
 export const PostCard = ({ 
-  
   display_name, 
   time, 
   location,
+  latitude,
+  longitude,
   title, 
   content, 
   imageUrl, 
@@ -41,17 +42,21 @@ export const PostCard = ({
             {/* Header Info */}
             <div className="flex items-center flex-wrap gap-2 text-xs text-[#838891]">
               <div className={`w-5 h-5 rounded-full border border-[#1F2228] ${accentColor}`}></div>
-              {/* <span className="font-bold text-gray-300">c/{subreddit}</span> */}
-              <span>•</span>
-              <span >Posted by u/<span className="font-bold text-gray-300">{display_name || "anonymous"}</span></span>
+   
+              <span>Posted by u/<span className="font-bold text-gray-300">{display_name || "anonymous"}</span></span>
               <span>•</span>
               <span>{time}</span>
-              <span className="flex items-center gap-1 text-blue-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
-                </svg>
-                <span className="font-medium">{location}</span>
-              </span>
+              
+              {/* Location and Coordinates - Made slightly bigger and clearer */}
+              <span className="flex items-center gap-2 text-white ml-1">
+  <MapPin size={14} strokeWidth={2.5} className="text-blue-500" />
+  <span className="font-semibold text-[13px] text-blue-500">{location}</span>
+  {(latitude && longitude) && (
+    <span className="text-[11px] text-gray-100 font-mono border-l border-gray-700 pl-2 ml-1 tracking-tight">
+      {parseFloat(latitude).toFixed(4)}° N, {parseFloat(longitude).toFixed(4)}° E
+    </span>
+  )}
+</span>
             </div>
 
             {/* Delete Trigger */}

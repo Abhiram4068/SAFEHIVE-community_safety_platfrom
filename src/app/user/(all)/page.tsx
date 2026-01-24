@@ -235,8 +235,7 @@ export default function Home() {
               title={post.title}
               content={post.caption}
               location={post.location_name || 'Global'}              
-              latitude={post.latitude}
-              longitude={post.longitude}
+              
               imageUrl={post.media?.[0]?.displayUrl || null}
               votes={post.vote_count || 0}
               accentColor={post.priority === "high" ? "bg-red-500" : "bg-blue-500"}
@@ -244,7 +243,7 @@ export default function Home() {
             
             <div className="flex items-center justify-between px-4 pb-2 -mt-2">
               <div className="flex items-center gap-4">
-                <button onClick={() => setSelectedPost(post)} className="flex items-center gap-1 text-sm text-[#838891] hover:text-blue-400 transition">
+                <button  onClick={() => router.push(`/user/post/${post.id}/`)} className="flex items-center gap-1 text-sm text-[#838891] hover:text-blue-400 transition">
                   <MessageSquare size={16} />
                   <span>View Comments</span>
                 </button>

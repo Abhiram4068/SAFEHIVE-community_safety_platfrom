@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { PostCard } from '@/src/components/PostCard';
+import axios from "axios"; // Ensure axios is imported or use fetch
+
+const MEDIA_SERVICE_URL = "http://127.0.0.1:8006";
 
 export default function NearMe() {
   const [posts, setPosts] = useState([]);
@@ -20,15 +23,12 @@ export default function NearMe() {
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        // 1. CAPTURE REAL COORDINATES
         const { latitude, longitude } = position.coords;
         
         try {
-          // 2. FETCH FROM DJANGO BACKEND
-          // Note: Radius is set to 5km by default here
-const response = await fetch(
-  `/api/nearby/?lat=${latitude}&lng=${longitude}&radius=5`
-);
+          const response = await fetch(
+            `/api/nearby/?lat=${latitude}&lng=${longitude}&radius=5`
+          );
 
           if (!response.ok) {
             throw new Error("Failed to fetch nearby posts from server.");
@@ -36,8 +36,27 @@ const response = await fetch(
 
           const realData = await response.json();
           
-          // 3. UPDATE STATE WITH REAL DATA
-          setPosts(realData);
+          // --- MEDIA FETCHING LOGIC ADDED HERE ---
+          const postsWithMedia = await Promise.all(
+            realData.map(async (post: any) => {
+              try {
+                const mediaRes = await axios.get(`${MEDIA_SERVICE_URL}/api/media/by-post/${post.id}/`);
+                const mediaWithFullUrls = mediaRes.data.map((m: any) => {
+                  const filePath = m.file || m.image || ""; 
+                  return {
+                    ...m,
+                    displayUrl: filePath.startsWith("http") ? filePath : `${MEDIA_SERVICE_URL}${filePath}`,
+                  };
+                });
+                return { ...post, media: mediaWithFullUrls };
+              } catch (error) {
+                return { ...post, media: [] };
+              }
+            })
+          );
+          // ---------------------------------------
+
+          setPosts(postsWithMedia);
           setHasPermission(true);
         } catch (err) {
           setError("Could not connect to SafeHive services. Please try again.");
@@ -110,6 +129,7 @@ const response = await fetch(
                     locationdistance={`${post.distance} km away`}
                     location={post.location_name}
                     title={post.title}
+                    imageUrl={post.media?.[0]?.displayUrl || null}
                     content={post.caption}
                     votes={post.vote_count || 0}
                     commentsCount={post.comment_count}

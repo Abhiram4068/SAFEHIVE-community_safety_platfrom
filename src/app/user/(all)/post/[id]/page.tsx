@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { 
-  Loader2, Bookmark, MessageSquare, ArrowBigUp, 
-  CheckCircle, ChevronLeft, Send 
+  Loader2, Bookmark, MessageSquare, Send,
+  CheckCircle, ChevronLeft 
 } from "lucide-react";
 import Link from "next/link";
 import { PostCard } from "@/src/components/PostCard";
@@ -141,6 +141,7 @@ export default function PostDetailPage() {
               <div >
                 {post.helpful_count || 0} <span className="text-[15px] text-[#5c6066] ">found this helpful</span>
               </div>
+              
             </div>
 
             
@@ -150,25 +151,26 @@ export default function PostDetailPage() {
         </div>
       </div>
 
-      {/* COMMENT INPUT */}
-      <div className="mt-8 mb-10">
-        <div className="relative">
-          <textarea
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder="Write a comment..."
-            className="w-full bg-[#1A1D23] border border-[#1F2228] rounded-2xl p-4 pr-12 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition resize-none"
-            rows={2}
-          />
-          <button 
-            onClick={postComment}
-            disabled={postingComment || !commentText.trim()}
-            className="absolute right-3 bottom-3 p-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl transition"
-          >
-            {postingComment ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-          </button>
-        </div>
-      </div>
+{/* COMMENT INPUT */}
+<div className="mt-8 mb-10">
+  <div className="flex gap-3 items-end bg-[#1A1D23] border border-[#1F2228] rounded-2xl p-2 focus-within:ring-1 focus-within:ring-blue-500 transition">
+    <textarea
+      value={commentText}
+      onChange={(e) => setCommentText(e.target.value)}
+      placeholder="Write a comment..."
+      className="flex-1 bg-transparent border-none p-2 text-sm text-gray-200 focus:outline-none transition resize-none min-h-[45px]"
+      rows={2}
+    />
+    <button 
+      onClick={postComment}
+      disabled={postingComment || !commentText.trim()}
+      
+      className="mb-1 p-2.5 bg-blue-600 hover:bg-blue-700 disabled: text-white rounded-xl transition flex-shrink-0"
+    >
+      {postingComment ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+    </button>
+  </div>
+</div>
 
       {/* COMMENTS LIST */}
       <div className="space-y-4">
@@ -185,7 +187,7 @@ export default function PostDetailPage() {
               </div>
               <div className="flex flex-col flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-bold text-white">User_{c.user_id}</span>
+                  <span className="text-sm font-bold text-white">{post.display_name}</span>
                   <span className="text-[10px] text-[#5c6066]">Today</span>
                 </div>
                 <p className="text-sm text-gray-300 leading-relaxed">
