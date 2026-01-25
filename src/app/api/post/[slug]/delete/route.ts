@@ -25,8 +25,7 @@ export async function DELETE(
           Authorization: `Bearer ${access}`,
         },
       }
-    );
-        console.log("hi");
+    )
 
     return NextResponse.json(
       { message: "Post deleted successfully" },
