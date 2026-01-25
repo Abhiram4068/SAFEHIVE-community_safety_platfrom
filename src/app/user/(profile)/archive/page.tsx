@@ -45,7 +45,7 @@ const ArchivePage = () => {
         {/* HEADER */}
         <div className="flex items-center justify-between border-b border-[#1F2228] pb-6">
           <div className="flex items-center gap-4">
-            <Link href="/user/userprofile" className="p-2 hover:bg-[#1A1C1E] rounded-full transition-colors border border-[#1F2228]">
+            <Link href="/user/userprofile" className="p-2 hover:bg-[#1A1C1E] rounded transition-colors ">
               <ArrowLeft size={20} />
             </Link>
             <div>
@@ -87,7 +87,7 @@ const ArchivePage = () => {
           ) : activeTab === 'Posts' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {archivedPosts.length > 0 ? archivedPosts.map(post => (
-                <div key={post.id} className="bg-[#0B0D10] border border-[#1F2228] p-5 rounded-xl hover:border-gray-700 transition-colors group relative overflow-hidden">
+                <div key={post.id} className="bg-[#0B0D10] border border-[#1F2228] p-5 rounded hover:border-gray-700 transition-colors group relative overflow-hidden">
                   <h3 className="font-bold text-sm text-gray-200 group-hover:text-white transition-colors mb-4 line-clamp-2">{post.content}</h3>
                   <div className="flex items-center justify-between text-[#818384]">
                     <div className="flex gap-3">
@@ -96,18 +96,18 @@ const ArchivePage = () => {
                     <span className="text-[9px] font-bold text-gray-600 uppercase">{new Date(post.created_at).toLocaleDateString()}</span>
                   </div>
                 </div>
-              )) : <EmptyState message="No archived posts found" />}
+              )) : <EmptyState  message="No archived posts found" />}
             </div>
           ) : (
             <div className="space-y-4">
               {archivedAnnouncements.length > 0 ? archivedAnnouncements.map(ann => (
-                <div key={ann.id} className="bg-[#0B0D10] border border-[#1F2228] p-6 rounded-xl group hover:border-orange-500/30 transition-all">
+                <div key={ann.id} className="bg-[#0B0D10] border border-[#1F2228] p-6 rounded group hover:border-orange-500/30 transition-all">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-lg text-white">{ann.title}</h3>
                     {/* ADDED UNARCHIVE BUTTON */}
                     <button 
                       onClick={() => handleUnarchiveAnnouncement(ann.id)}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-orange-500 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all"
+                      className="flex items-center gap-2 px-3 py-1.5 rounded bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-orange-500 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all"
                     >
                       <RotateCcw size={12} /> Unarchive
                     </button>
@@ -127,7 +127,7 @@ const ArchivePage = () => {
 };
 
 const EmptyState = ({ message }: { message: string }) => (
-  <div className="py-24 flex flex-col items-center justify-center text-gray-700 border border-[#1F2228] rounded-2xl bg-[#0B0D10]/50">
+  <div className="py-24 flex flex-col items-center justify-center text-gray-700 border border-[#1F2228] rounded bg-[#0B0D10]/50">
     <Archive size={32} className="mb-4 opacity-10" />
     <p className="text-[10px] font-black uppercase tracking-[0.2em]">{message}</p>
   </div>
