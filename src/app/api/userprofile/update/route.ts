@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function PATCH(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     const formData = await request.formData();
 
     // REPLACE THIS URL with your actual Django/Backend URL
-    const BACKEND_URL = "http://127.0.0.1:8012/api/user/profile/update/";
+    const BACKEND_URL = "http://127.0.0.1:8012/api/profile/me/";
 
     const backendResponse = await fetch(BACKEND_URL, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: {
         'Authorization': request.headers.get('Authorization') || '',
       },
