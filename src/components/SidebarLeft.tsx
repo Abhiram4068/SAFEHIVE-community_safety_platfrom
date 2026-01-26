@@ -3,6 +3,26 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from 'axios';
+import {
+  Home,
+  MapPin,
+  AlertTriangle,
+  Layers,
+  Users,
+  Megaphone,
+  Landmark,
+  ChevronRight // Added for the arrow mark
+} from "lucide-react";
+
+const ICONS = {
+  home: Home,
+  "map-pin": MapPin,
+  "alert-triangle": AlertTriangle,
+  layers: Layers,
+  users: Users,
+  megaphone: Megaphone,
+  landmark: Landmark,
+};
 
 type communityType = {
   id: number;
@@ -16,25 +36,22 @@ type categoryType = {
 };
 
 const PUBLICFEED = [
-  { emoji: '🏠', label: 'All Posts', path: '/' },
-  { emoji: '📍', label: 'Posts near me', path: '/user/nearme' },
-  { emoji: '⚠️', label: 'Report Incident', path: '/user/incidents' },
-  { emoji: '🚨', label: 'Category', path: '/categories' },
-  { emoji: '💬', label: 'Browse Communities', path: '/communities' },
-  { emoji: '🆘', label: 'Public Announcements', path: '/announcements' },
-,
+  { icon: 'home', label: 'All Posts', path: '/' },
+  { icon: 'map-pin', label: 'Posts near me', path: '/user/nearme' },
+  { icon: 'alert-triangle', label: 'Report Incident', path: '/user/incidents' },
+  { icon: 'layers', label: 'Category', path: '/categories' },
+  { icon: 'users', label: 'Browse Communities', path: '/communities' },
+  { icon: 'megaphone', label: 'Public Announcements', path: '/announcements' },
 ];
 
 const USERFEED = [
-  { emoji: '🏠', label: 'All Posts', path: '/user/' },
-  { emoji: '📍', label: 'Posts near me', path: '/user/nearme' },
-  { emoji: '⚠️', label: 'Report Incident', path: '/user/incidents' },
-  { emoji: '🚨', label: 'Category', path: '/user/categories' },
-  { emoji: '💬', label: 'Browse Communities', path: '/user/communities' },
-  { emoji: '🆘', label: 'Public Announcements', path: '/user/announcements' },
-{ emoji: '🏛️', label: 'Platform Announcements', path: '/user/admin-announcements' },
-
-
+  { icon: 'home', label: 'All Posts', path: '/user/' },
+  { icon: 'map-pin', label: 'Posts near me', path: '/user/nearme' },
+  { icon: 'alert-triangle', label: 'Report Incident', path: '/user/incidents' },
+  { icon: 'layers', label: 'Category', path: '/user/categories' },
+  { icon: 'users', label: 'Browse Communities', path: '/user/communities' },
+  { icon: 'megaphone', label: 'Public Announcements', path: '/user/announcements' },
+  { icon: 'landmark', label: 'Platform Announcements', path: '/user/admin-announcements' },
 ];
 
 interface SidebarProps {
@@ -60,9 +77,7 @@ export const Sidebar = ({ user }: SidebarProps) => {
 
   async function fetchCategories() {
     try {
-      // Logic from first code: fetching from /api/mycommunity/ 
-      // Note: In your snippets, both communities and categories call the same endpoint.
-      const res = await axios.get("/api/mycommunity/");
+      const res = await axios.get("/api/categories/");
       setCategories(res.data);
     } catch (err) {
       console.error("Failed to load categories", err);
@@ -80,20 +95,28 @@ export const Sidebar = ({ user }: SidebarProps) => {
       {/* FEED SECTION */}
       <div className="mt-8">
         <h3 className="px-3 text-xs font-semibold text-[#838891] uppercase tracking-wider mb-2">
-          FEED
+          MAIN FEED
         </h3>
         <div className="space-y-1">
-          {(user ? USERFEED : PUBLICFEED).map((feed) => (
-            <Link
-              key={feed.label}
-              href={feed.path}
-              className="flex items-center px-3 py-2 text-[#838891] hover:bg-[#1A1D23] rounded-md text-sm border border-transparent hover:border-[#1F2228]"
-            >
-              <span className="mr-3">{feed.emoji}</span> {feed.label}
-            </Link>
-          ))}
+          {(user ? USERFEED : PUBLICFEED).map((feed) => {
+            const Icon = ICONS[feed.icon as keyof typeof ICONS];
+            return (
+              <Link
+                key={feed.label}
+                href={feed.path}
+                className="flex items-center px-3 py-2 text-[#838891] hover:bg-[#1A1D23] rounded-md text-sm border border-transparent hover:border-[#1F2228]"
+              >
+                <span className="mr-3">
+                  {Icon && <Icon size={18} color="#ffffff"  />}
+                </span>
+                {feed.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
+
+      <div className="mt-6 border-t border-[#1F2228]" />
 
       {/* COMMUNITIES SECTION */}
       <div className="mt-8">
@@ -102,18 +125,28 @@ export const Sidebar = ({ user }: SidebarProps) => {
         </h3>
         <div className="space-y-1">
           {communities && communities.length > 0 ? (
-            communities.map((community) => (
+            <>
+              {communities.slice(0, 3).map((community) => (
+                <Link
+                  key={community.id}
+                  href={`/communityinfo/${community.id}`}
+                  className="flex items-center px-3 py-2 text-[#838891] hover:bg-[#1A1D23] rounded-md text-sm border border-transparent hover:border-[#1F2228]"
+                >
+                  <span className="mr-3 text-xs bg-[#1F2228] w-5 h-5 flex items-center justify-center rounded-sm">
+                    r/
+                  </span>
+                  {community.name}
+                </Link>
+              ))}
+              {/* Explore Your Communities Link */}
               <Link
-                key={community.id}
-                href={`/communityinfo/${community.id}`}
-                className="flex items-center px-3 py-2 text-[#838891] hover:bg-[#1A1D23] rounded-md text-sm border border-transparent hover:border-[#1F2228]"
+                href="/user/my-communities"
+                className="flex items-center justify-between px-3 py-2 mt-2 text-[#838891] hover:text-white transition-colors text-xs font-bold uppercase tracking-tight group"
               >
-                <span className="mr-3 text-xs bg-[#1F2228] w-5 h-5 flex items-center justify-center rounded-sm">
-                  r/
-                </span>
-                {community.name}
+                Explore your communities
+                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-            ))
+            </>
           ) : (
             <p className="px-3 text-xs text-[#838891]">
               Login to join communities !
@@ -122,26 +155,38 @@ export const Sidebar = ({ user }: SidebarProps) => {
         </div>
       </div>
 
+      <div className="mt-6 border-t border-[#1F2228]" />
+
       {/* CATEGORY SECTION */}
       <div className="mt-8">
         <h3 className="px-3 text-xs font-semibold text-[#838891] uppercase tracking-wider mb-2">
-          Category
+          Find by Category
         </h3>
         <div className="space-y-1">
-          {categories.map((topic) => (
+          {categories.slice(0, 3).map((topic) => (
             <Link
               key={topic.id}
               href={`/categories/${topic.id}`}
               className="flex items-center px-3 py-2 text-[#838891] hover:bg-[#1A1D23] rounded-md text-sm border border-transparent hover:border-[#1F2228]"
             >
-              <span className="mr-3">📁</span> {topic.name}
+              <span className="mr-3"> <Layers size={18}  /></span> {topic.name}
             </Link>
           ))}
+          
+          {/* Explore Categories Link */}
+          <Link
+            href="/categories"
+            className="flex items-center justify-between px-3 py-2 mt-2 text-[#838891] hover:text-white transition-colors text-xs font-bold uppercase tracking-tight group"
+          >
+            Explore all categories
+            <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </div>
-
-      <div className="mt-8 border-t border-[#1F2228] pt-4 px-3 text-xs text-[#838891]">
-        <p>Reddify © 2026. All rights reserved.</p>
+      <div>
+        <div className="mt-8 border-t border-[#1F2228] pt-4 px-3 text-xs text-[#838891]">
+        
+      </div>
       </div>
     </aside>
   );

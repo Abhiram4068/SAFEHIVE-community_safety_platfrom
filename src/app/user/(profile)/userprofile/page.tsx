@@ -199,27 +199,65 @@ const ReddifyProfile = () => {
                   </div>
                 ) : <EmptyState message="No posts yet." />
               )}
-               
-              {/* Announcements Section */}
-              {activeTab === "Announcements" && (    
-                announcements.length > 0 ? (            
+              
+              {activeTab === "Announcements" && (
                 <div className="space-y-4">
                   {announcements.map((a) => (
-                    <div key={a.id} className="bg-[#0B0D10] border border-[#1F2228] rounded-xl p-6 relative overflow-hidden group">
+                    <div key={a.id} className="bg-[#0B0D10] border border-[#1F2228] rounded p-6 transition-all relative overflow-hidden group">
                       <div className="pr-10">
                         <h3 className="font-bold text-white text-lg mb-2">{a.title}</h3>
                         <p className="text-gray-400 text-sm leading-relaxed">{a.content}</p>
+
+                        {/* CREATED AT VALUE */}
                         <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-4">
-                          {new Date(a.created_at).toLocaleDateString()}
+                          {new Date(a.created_at).toLocaleDateString()} • {new Date(a.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
-                      {/* Menu for announcements would go here */}
+
+                      {/* BOTTOM RIGHT ARROW TOGGLE */}
+                      <button
+                        onClick={() => setOpenAnnouncementMenu(openAnnouncementMenu === a.id ? null : a.id)}
+                        className={`absolute bottom-4 right-4 p-1.5 rounded-lg bg-[#1A1C1E] border border-[#343536] transition-all ${openAnnouncementMenu === a.id ? 'rotate-180 bg-orange-500 border-orange-400 text-white' : 'text-gray-500 hover:text-white'}`}
+                      >
+                        <ChevronDown size={18} />
+                      </button>
+
+                      {/* EXPANDABLE OPTIONS SECTION */}
+                      {openAnnouncementMenu === a.id && (
+                        <div className="mt-6 pt-4 border-t border-[#1F2228] flex gap-3 animate-in slide-in-from-top-2 duration-200">
+                          <button
+                            onClick={async () => {
+                              try {
+                                await axios.patch(`/api/announcements/${a.id}/archive/`, {}, { withCredentials: true });
+                                setAnnouncements(prev => prev.filter(item => item.id !== a.id));
+                           
+                              } catch (err) {
+                                console.error("Archive failed", err);
+                              }
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-300 transition-all"
+                          >
+                            <Archive size={14} /> Archive
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await axios.delete(`/api/announcements/${a.id}/delete/`, { withCredentials: true });
+                                setAnnouncements(prev => prev.filter(item => item.id !== a.id));
+                              } catch (err) {
+                                console.error("Delete failed", err);
+                              }
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-xs font-bold text-red-500 transition-all"
+                          >
+                            <Trash2 size={14} /> Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
-                ) : <EmptyState message="No announcements yet." />
               )}
-
 
               {activeTab === "Saved" && (
                 savedPosts.length > 0 ? (
@@ -228,7 +266,7 @@ const ReddifyProfile = () => {
                       <PostItem 
                         key={post.id} 
                         post={post} 
-                        onNavigate={() => router.push(`/post/${post.id}`)} 
+                        onNavigate={() => router.push(`/user/post/${post.id}`)} 
                         onDelete={null} 
                         showDelete={false} 
                         isSaved 
@@ -361,7 +399,7 @@ const PostItem = ({ post, onNavigate, onDelete, showDelete, isSaved }: any) => {
 };
 
 const EmptyState = ({ message, icon }: any) => (
-  <div className="py-20 flex flex-col items-center justify-center text-gray-600  w-full">
+  <div className="py-20 flex flex-col items-center justify-center text-gray-600 border-2 border-dashed border-[#1F2228] rounded-xl w-full">
     {icon}
     <p>{message}</p>
   </div>

@@ -31,6 +31,7 @@ export default function Home() {
   const [comments, setComments] = useState<any[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [selectedPost, setSelectedPost] = useState<any | null>(null);
+  
 
   // YOUR REACTION LOGIC
   const handleReaction = async (postId: number, reactionKey: string) => {
