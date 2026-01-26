@@ -67,14 +67,10 @@ export default function AnnouncementsListPage() {
       {/* SEARCH AND NAVIGATION HEADER */}
       <div className="flex flex-col md:flex-row items-center gap-4 mb-8 pt-4">
         <div className="relative flex-1 w-full">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-[#838891]" />
-          </div>
-          <input 
-            type="text" 
-            className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none focus:border-gray-500 sm:text-sm" 
-            placeholder="Search Announcements" 
-          />
+          <div className="flex items-center gap-2 px-2">
+          <span className="text-xl">📢</span>
+          <h2 className="text-white text-lg font-bold">Recent Announcements</h2>
+        </div>
         </div>
 
         <Link 
@@ -86,12 +82,7 @@ export default function AnnouncementsListPage() {
         </Link>
       </div>
 
-      <section className="mb-6">
-        <div className="flex items-center gap-2 px-2">
-          <span className="text-xl">📢</span>
-          <h2 className="text-white text-lg font-bold">Recent Announcements</h2>
-        </div>
-      </section>
+      
 
       {error && (
         <div className="bg-red-500/10 border border-red-500 rounded-lg p-4 mb-6 text-red-400">

@@ -24,7 +24,7 @@ type CategoryType = {
 
 export default function ExploreCenter() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
-
+  const [searchQuery, setSearchQuery] = useState("");
   async function fetchdata() {
     try {
       const response = await axios.get('http://127.0.0.1:8002/api/categories/');
@@ -37,6 +37,25 @@ export default function ExploreCenter() {
   useEffect(() => {
     fetchdata();
   }, []);
+const filteredCategories = categories
+  .map((cat) => {
+    const matchedSubcategories = cat.subcategories.filter((sub) =>
+      `${sub.name} ${sub.description}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
+
+    return {
+      ...cat,
+      subcategories: matchedSubcategories,
+    };
+  })
+  .filter(
+    (cat) =>
+      cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cat.subcategories.length > 0 ||
+      searchQuery.trim() === ""
+  );
 
   return (
     <div className="flex-1 w-full lg:max-w-4xl mx-auto pb-10 px-4">
@@ -48,11 +67,13 @@ export default function ExploreCenter() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
           </div>
-          <input 
-            type="text" 
-            className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full leading-5 bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none focus:border-gray-500 sm:text-sm" 
-            placeholder="Browse Categories" 
-          />
+         <input 
+  type="text"
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full leading-5 bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none focus:border-gray-500 sm:text-sm" 
+  placeholder="Browse Categories" 
+/>
         </div>
       </div><br></br>
 
@@ -65,7 +86,7 @@ export default function ExploreCenter() {
       </div>
 
       {/* Main Category Sections */}
-      {categories.map((mainCat) => (
+{filteredCategories.map((mainCat) => (
         <section key={mainCat.id} className="mb-10">
           {/* Main Category Name as Header */}
           <div className="flex items-center gap-2 mb-4 px-2">

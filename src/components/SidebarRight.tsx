@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Plus, Megaphone, Bell, ChevronRight } from 'lucide-react'; // Changed icons
 import { CreateCommunityModal } from './CreateCommunityModal';
 
@@ -8,17 +8,27 @@ export const RightSidebar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Updated data for Admin Announcements
-  const adminAnnouncements = [
-    { title: "System Maintenance", date: "Jan 22", color: "text-red-500" },
-    { title: "Community Guidelines", date: "Official", color: "text-blue-500" },
-    { title: "New Feature: Maps", date: "Jan 15", color: "text-green-500" },
-  ];
+const [adminAnnouncements, setAdminAnnouncements] = useState<any[]>([]);
 
   const frequentCategories = [
     { name: "Neighborhood Watch" },
     { name: "Lost & Found" },
   ];
+useEffect(() => {
+  async function fetchAnnouncements() {
+    try {
+      const res = await fetch("/api/admin/announcements/");
+      const data = await res.json();
 
+      // take only top 3
+      setAdminAnnouncements(data.slice(0, 3));
+    } catch (error) {
+      console.error("Failed to fetch admin announcements", error);
+    }
+  }
+
+  fetchAnnouncements();
+}, []);
   return (
     <aside className="hidden xl:block w-80 pl-4 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto border-l border-[#1F2228] [scrollbar-width:none]">
       
@@ -60,15 +70,19 @@ export const RightSidebar = () => {
           {adminAnnouncements.map((item, idx) => (
             <Link 
               key={idx} 
-              href={`/announcements/${item.title.toLowerCase().replace(/\s+/g, '-')}`}
+              href={`user/admin-announcements/`}
               className="px-4 py-2.5 hover:bg-[#1A1D23] transition flex items-center justify-between group"
             >
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <div className={`w-1 h-3 rounded-full ${item.color} bg-current`} />
                   <span className="text-gray-300 text-sm font-medium group-hover:text-white transition-colors">
-                    {item.title}
-                  </span>
+  {item.title}
+</span>
+
+<span className="text-[10px] text-[#5c6066] ml-3">
+  {item.created_at ? new Date(item.created_at).toLocaleDateString() : ""}
+</span>
                 </div>
                 <span className="text-[10px] text-[#5c6066] ml-3">{item.date}</span>
               </div>
