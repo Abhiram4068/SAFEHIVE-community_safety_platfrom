@@ -55,12 +55,12 @@ export const Navbar = ({ user }: NavbarProps) => {
                 href="/user/messages"
                 className="flex items-center gap-2 px-3 py-1.5 text-[#838891] hover:text-white hover:bg-[#1F2228] rounded-full transition-all group"
               >
-                <div className="relative">
+                {/* <div className="relative">
                   <Mail size={20} className="group-hover:scale-110 transition-transform" />
-                  {/* Optional indicator for new messages */}
+                  
                   <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-orange-600 rounded-full border-2 border-[#0B0D10]" />
-                </div>
-                <span className=" sm:block text-sm font-medium">Inbox</span>
+                </div> */}
+                {/* <span className=" sm:block text-sm font-medium">Inbox</span> */}
               </Link>
 
               {/* Profile Dropdown */}

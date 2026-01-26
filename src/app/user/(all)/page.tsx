@@ -31,7 +31,7 @@ export default function Home() {
   const [comments, setComments] = useState<any[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [selectedPost, setSelectedPost] = useState<any | null>(null);
-  
+  const [searchQuery, setSearchQuery] = useState("");
 
   // YOUR REACTION LOGIC
   const handleReaction = async (postId: number, reactionKey: string) => {
@@ -186,7 +186,17 @@ export default function Home() {
       fetchComments();
     }
   }, [selectedPost?.id]);
-
+const filteredPosts = searchQuery.trim()
+  ? posts.filter((post) => {
+      const query = searchQuery.toLowerCase();
+      return (
+        post.title?.toLowerCase().includes(query) ||
+        post.caption?.toLowerCase().includes(query) ||
+        post.location_name?.toLowerCase().includes(query) ||
+        post.display_name?.toLowerCase().includes(query)
+      );
+    })
+  : posts;;
   return (
     <div className="flex-1 w-full lg:max-w-2xl mx-auto pb-10 px-4 bg-[#0D0F12] min-h-screen text-white">
       <br />
@@ -195,11 +205,13 @@ export default function Home() {
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-[#838891]" />
           </div>
-          <input
-            type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none focus:ring-1 focus:ring-gray-500 sm:text-sm"
-            placeholder="Search SafeHive"
-          />
+         <input
+  type="text"
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none focus:ring-1 focus:ring-gray-500 sm:text-sm"
+  placeholder="Search SafeHive"
+/>
         </div>
       </div>
 
@@ -216,11 +228,12 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
-          </div>
-        ) : posts.map((post) => (
+  {loading ? (
+  <div className="flex flex-col items-center justify-center py-20">
+    <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
+  </div>
+) : filteredPosts.length > 0 ? (
+  filteredPosts.map((post) => (
           <div key={post.id} className="relative border border-[#1F2228] rounded-xl overflow-hidden bg-[#16181D]">
             <div className="absolute top-4 right-4 z-10">
   <button
@@ -271,7 +284,12 @@ export default function Home() {
 
            
           </div>
-        ))}
+         ))
+) : (
+  <div className="text-center text-[#838891] py-10">
+    No matching posts found
+  </div>
+)}
       </div>
 
       {selectedPost && (

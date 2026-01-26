@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { PostCard } from '@/src/components/PostCard';
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { MessageSquare, CheckCircle, Bookmark, ExternalLink } from "lucide-react";
+import { MessageSquare, CheckCircle, Bookmark, ExternalLink, Search } from "lucide-react";
 
 const MEDIA_SERVICE_URL = "http://127.0.0.1:8006";
 const POST_SERVICE_URL = "http://127.0.0.1:8000";
@@ -15,7 +15,7 @@ export default function NearMe() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState("");
   // --- ADDED: HELPFUL LOGIC ---
   const handleHelpful = async (postId: number) => {
     try {
@@ -93,7 +93,13 @@ export default function NearMe() {
       }
     );
   };
-
+const filteredPosts = searchQuery.trim()
+  ? posts.filter((post) =>
+      `${post.title || ""} ${post.caption || ""}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    )
+  : posts;
   return (
     <div className="flex-1 w-full lg:max-w-2xl mx-auto pb-10 px-4 bg-[#0D0F12] min-h-screen text-white">
       {!hasPermission && !loading && (
@@ -121,12 +127,27 @@ export default function NearMe() {
 
       {hasPermission && !loading && (
         <div className="flex flex-col w-full gap-4 mt-6">
+           <div className="flex justify-center mb-8 mt-4">
+        <div className="relative w-full max-w-xl">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-[#838891]" />
+          </div>
+         <input
+  type="text"
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none focus:ring-1 focus:ring-gray-500 sm:text-sm"
+  placeholder="Search SafeHive"
+/>
+        </div>
+      </div>
           <div className="flex items-center justify-between mb-2 border-b border-[#1F2228] pb-4">
             <h2 className="text-lg font-semibold text-white">Local Feed</h2>
             <button onClick={requestLocation} className="text-xs text-blue-400 hover:underline">Refresh Location</button>
           </div>
           
-          {posts.map((post) => (
+          {filteredPosts.length > 0 ? (
+  filteredPosts.map((post) => (
             <div key={post.id} className="relative border border-[#1F2228] rounded-xl overflow-hidden bg-[#16181D]">
               {/* INSPECT BUTTON */}
               <div className="absolute top-4 right-4 z-10">
@@ -176,7 +197,12 @@ export default function NearMe() {
                 </div>
               </div>
             </div>
-          ))}
+            ))
+) : (
+  <div className="text-center text-[#838891] py-10">
+    No matching posts found
+  </div>
+)}
         </div>
       )}
     </div>

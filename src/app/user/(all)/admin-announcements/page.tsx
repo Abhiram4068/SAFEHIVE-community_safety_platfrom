@@ -45,9 +45,9 @@ setAnnouncements(annRes.data || []);
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pb-20">
+    <div className="min-h-screen text-white pb-20">
       {/* Header Navigation */}
-      <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-[#343536]">
+      <div className="sticky top-0 z-10 backdrop-blur-md border-b border-[#343536]">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button 
@@ -67,15 +67,15 @@ setAnnouncements(annRes.data || []);
 
       <div className="max-w-3xl mx-auto px-4 mt-8">
         {/* Admin Info Card */}
-        <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-6 mb-8 flex gap-4">
-          <div className="bg-blue-500/10 p-3 rounded-xl h-fit">
+        <div className="bg-blue-500/5 rounded-2xl p-6 mb-8 flex gap-4">
+          <div className="p-3 rounded-xl h-fit">
             <ShieldCheck className="text-blue-500 w-6 h-6" />
           </div>
           <div>
-            <h4 className="text-blue-100 font-bold">Official Channel</h4>
+            <h4 className="text-blue-100 font-bold">Official Announcements</h4>
             <p className="text-blue-200/60 text-sm leading-relaxed mt-1">
-              Welcome to the official broadcast feed. These updates are strictly 
-              from community administrators and contain important news, policy changes, and events.
+              Welcome to the official Announcements feed. These updates are strictly 
+              from SAFEHIVE administrators and contain important news, policy changes, and events.
             </p>
           </div>
         </div>
@@ -86,18 +86,18 @@ setAnnouncements(annRes.data || []);
             announcements.map((ann) => (
               <div 
                 key={ann.id} 
-                className="bg-[#0B0D10] border border-[#343536] rounded-2xl p-6 hover:border-[#4a4c4d] transition-all group"
+                className="bg-[#15191C] border border-[#343536] rounded p-6 hover:border-[#4a4c4d] transition-all group"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="bg-blue-500/10 text-blue-400 p-2 rounded-lg">
+                    <div className=" text-blue-400 p-2 ">
                       <Bell size={18} />
                     </div>
                     <div>
                       <h2 className="text-white font-bold text-xl leading-tight">{ann.title}</h2>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded font-bold uppercase tracking-tighter">
-                          Admin Post
+                          Admin 
                         </span>
                         <span className="text-[#818384] text-xs flex items-center gap-1">
                           <Calendar size={12} />
@@ -118,14 +118,7 @@ setAnnouncements(annRes.data || []);
                   {ann.content || ann.message}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-[#1A1A1B] flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-blue-500/80 font-black">
-                      Verified Update
-                    </span>
-                  </div>
-                </div>
+               
               </div>
             ))
           ) : (

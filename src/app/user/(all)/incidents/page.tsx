@@ -145,12 +145,12 @@ export default function ReportIncident() {
           <AlertCircle className="text-red-500 w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-white text-xl font-bold tracking-tight italic uppercase">Report Incident</h1>
+          <h1 className="text-white text-xl font-bold tracking-tight uppercase">Report Incident</h1>
           <p className="text-[#838891] text-[10px] font-bold tracking-[0.2em] uppercase">Emergency Response Unit</p>
         </div>
       </div>
 
-      <div className="bg-[#15191C] border border-[#2D2F34] rounded-2xl p-6 flex flex-col gap-6 shadow-2xl">
+      <div className="bg-[#15191C] border border-[#2D2F34] rounded p-6 flex flex-col gap-6 shadow-2xl">
         
         {/* CATEGORY PICKER SECTION */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -163,7 +163,7 @@ export default function ReportIncident() {
               <select 
                 value={formData.main_category_id}
                 onChange={handleMainCategoryChange}
-                className="w-full bg-[#0B0E11] border border-[#2D2F34] rounded-xl p-3.5 text-sm text-white appearance-none focus:border-blue-500 outline-none transition-all cursor-pointer hover:bg-[#1c2127]"
+                className="w-full bg-[#0B0E11] border border-[#2D2F34] rounded p-3.5 text-sm text-white appearance-none focus:border-blue-500 outline-none transition-all cursor-pointer hover:bg-[#1c2127]"
               >
                 <option value="" disabled>Select category...</option>
                 {mainCategories.map((cat) => (
@@ -184,7 +184,7 @@ export default function ReportIncident() {
                 disabled={!formData.main_category_id || fetchingSubs}
                 value={formData.category_id}
                 onChange={(e) => setFormData({...formData, category_id: e.target.value})}
-                className="w-full bg-[#0B0E11] border border-[#2D2F34] rounded-xl p-3.5 text-sm text-white appearance-none focus:border-blue-500 outline-none disabled:opacity-20 disabled:grayscale transition-all cursor-pointer"
+                className="w-full bg-[#0B0E11] border border-[#2D2F34] rounded p-3.5 text-sm text-white appearance-none focus:border-blue-500 outline-none disabled:opacity-20 disabled:grayscale transition-all cursor-pointer"
               >
                 {!formData.main_category_id ? (
                   <option value="">Awaiting Step 01...</option>
@@ -216,7 +216,7 @@ export default function ReportIncident() {
             placeholder="E.g. Large tree branch blocking Road 5"
             value={formData.title}
             onChange={(e) => setFormData({...formData, title: e.target.value})}
-            className="w-full bg-[#0B0E11] border border-[#2D2F34] rounded-xl p-3.5 text-sm text-white focus:border-blue-500 outline-none transition-all placeholder:text-gray-700"
+            className="w-full bg-[#0B0E11] border border-[#2D2F34] rounded p-3.5 text-sm text-white focus:border-blue-500 outline-none transition-all placeholder:text-gray-700"
           />
         </div>
 
@@ -228,17 +228,17 @@ export default function ReportIncident() {
             placeholder="Provide any extra details that might help responders..."
             value={formData.caption}
             onChange={(e) => setFormData({...formData, caption: e.target.value})}
-            className="w-full bg-[#0B0E11] border border-[#2D2F34] rounded-xl p-3.5 text-sm text-white focus:border-blue-500 outline-none resize-none transition-all placeholder:text-gray-700"
+            className="w-full bg-[#0B0E11] border border-[#2D2F34] rounded p-3.5 text-sm text-white focus:border-blue-500 outline-none resize-none transition-all placeholder:text-gray-700"
           />
         </div>
 
         {/* Image Evidence */}
         <div className="space-y-2">
-          <label className="text-[10px] font-black text-[#838891] uppercase tracking-wider">Photo Evidence</label>
+          <label className="text-[10px] font-black text-[#838891] uppercase tracking-wider">Attachements</label>
           <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" multiple className="hidden" />
           <div className="flex flex-wrap gap-3">
             {images.map((img, idx) => (
-              <div key={idx} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-[#2D2F34] group">
+              <div key={idx} className="relative w-24 h-24 rounded overflow-hidden border border-[#2D2F34] group">
                 <img src={img} className="w-full h-full object-cover" alt="Preview" />
                 <button 
                   onClick={() => {
