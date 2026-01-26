@@ -12,50 +12,44 @@ type CommunityType = {
     member_count?: number;
     post_count?: number;
 }
+
 const MEDIA_BASE_URL = "http://127.0.0.1:8005";
-export default async function TopCommunities() {
+
+export default async function MyCommunities() {
+    // 1. Get the token from cookies (Server-side)
+    const cookieStore = await cookies();
+    const access = cookieStore.get("access")?.value;
+    
     let communities: CommunityType[] = [];
 
-  
-
-    async function fetchData() {
+    // 2. Fetch data directly from the Django backend
+    if (access) {
         try {
-            const response = await axios.get("http://127.0.0.1:8005/api/groups/list/");
+            const response = await axios.get("http://127.0.0.1:8005/api/groups/mygroup/", {
+                headers: {
+                    Authorization: `Bearer ${access}`,
+                },
+            });
             communities = response.data;
         } catch (error) {
-            console.error("Error fetching communities:", error);
+            console.error("Error fetching communities from backend:", error);
         }
     }
-
-    await fetchData();
 
     return (
         <div className="flex-1 w-full lg:max-w-4xl mx-auto pb-10 px-4">
             {/* SEARCH AND NAVIGATION */}
             <div className="flex flex-col md:flex-row items-center gap-4 mb-8 pt-4">
                 <div className="relative flex-1 w-full">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-[#838891]" />
-                    </div>
-                    <input
-                        type="text"
-                        className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none focus:border-gray-500 sm:text-sm"
-                        placeholder="Search Communities"
-                    />
+                    
                 </div>
 
-                <Link
-                    href="/user/createcommunity"
-                    className="flex items-center gap-2 bg-white hover:bg-gray-200 text-black px-4 py-2 rounded-full font-bold text-sm transition shrink-0"
-                >
-                    <Plus className="w-4 h-4" />
-                    Create Community
-                </Link>
+                
             </div>
 
             <section className="mb-4 px-2">
                 <div className="flex items-center gap-2">
-                    <h2 className="text-white text-lg font-bold">Top Communities</h2>
+                    <h2 className="text-white text-lg font-bold">Your Communities</h2>
                 </div>
             </section>
 
@@ -70,39 +64,46 @@ export default async function TopCommunities() {
                 ))}
             </div>
 
+            {/* EMPTY STATE */}
             {communities.length === 0 && (
                 <div className="text-center py-20 text-[#838891] border border-dashed border-[#2D2F34] rounded-xl mt-4">
-                    No communities found. Be the first to create one!
+                    {access 
+                        ? "No communities found. Be the first to create one!" 
+                        : "Please log in to see your communities."}
                 </div>
             )}
         </div>
     );
 }
 
+// Sub-component for clarity
 function CommunityRow({ community, rank }: { community: CommunityType, rank: number }) {
     const { id, name, description, image, color } = community;
     
+    // Ensure image URL is absolute
+    const imageUrl = image 
+        ? (image.startsWith('http') ? image : `${MEDIA_BASE_URL}${image}`)
+        : null;
+
     return (
         <Link href={`/communityinfo/${id}`}>
             <div className="flex items-center gap-4 py-4 px-2 border-b border-[#1F2228] hover:bg-[#1A1D23]/50 transition-colors group">
-                {/* RANK & image */}
+                {/* RANK & IMAGE */}
                 <div className="flex items-center gap-4 min-w-[70px]">
                     <span className="text-[#838891] font-medium text-sm w-4 text-center">{rank}</span>
-                    <div
-  className={`${color || "bg-blue-600"} w-9 h-9 rounded-full overflow-hidden flex items-center justify-center shadow-inner shrink-0`}
->
-{image ? (
-  <img
-    src={`${MEDIA_BASE_URL}${image}`}
-    alt={name}
-    className="w-full h-full object-cover"
-  />
-) : (
-  <span className="text-white font-bold">
-    {name.charAt(0).toUpperCase()}
-  </span>
-)}
-</div>
+                    <div className={`${color || "bg-blue-600"} w-9 h-9 rounded-full overflow-hidden flex items-center justify-center shadow-inner shrink-0`}>
+                        {imageUrl ? (
+                            <img
+                                src={imageUrl}
+                                alt={name}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <span className="text-white font-bold text-xs">
+                                {name.charAt(0).toUpperCase()}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 {/* INFO */}

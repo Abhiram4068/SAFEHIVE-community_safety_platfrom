@@ -24,7 +24,7 @@ export async function GET() {
         },
       }
     );
-
+console.log(res.data)
     return NextResponse.json(res.data);
   } catch (error: any) {
     return NextResponse.json(

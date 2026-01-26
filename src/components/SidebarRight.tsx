@@ -24,23 +24,24 @@ export const RightSidebar = () => {
       
       {/* HOME WIDGET */}
       <div className="bg-[#0B0D10] rounded-lg mb-4 border border-[#1F2228] p-4">
-        <h3 className="text-white font-bold mb-2 italic">Home</h3>
+        <h3 className="text-white font-bold mb-2 ">Home</h3>
         <p className="text-[#838891] text-xs mb-4">
           Your personal SafeHive frontpage. Come here to check in with your favorite communities.
         </p>
         <div className="flex flex-col gap-2">
-          <Link href="/allfeeds/incidents/">
+          <Link href="/user/incidents/">
             <button className="w-full bg-[#D7DADC] hover:bg-white text-black py-2 rounded-full font-bold text-sm transition">
               Create Post
             </button>
           </Link>
-          
+          <Link href="/user/createcommunity/">
           <button 
-            onClick={() => setIsModalOpen(true)}
+            
             className="w-full border border-[#343536] hover:bg-[#1A1D23] text-white py-2 rounded-full font-bold text-sm transition flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" /> Create Community
           </button>
+          </Link>
         </div>
       </div>
 
@@ -76,24 +77,8 @@ export const RightSidebar = () => {
           ))}
         </div>
 
-        <div className="px-4 py-2">
-          <div className="h-[1px] w-full bg-[#1F2228]" />
-        </div>
 
-        <div className="p-4 pt-2">
-          <p className="text-[10px] font-bold text-[#5c6066] uppercase tracking-widest mb-3">Frequently Browsed Categories</p>
-          <div className="flex flex-wrap gap-2">
-            {frequentCategories.map((cat, idx) => (
-              <Link 
-                key={idx} 
-                href={`/category/${cat.name.toLowerCase()}`}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1A1D23] border border-[#2F333A] rounded-md text-xs text-gray-400 hover:text-white hover:border-gray-500 transition"
-              >
-                {cat.name}
-              </Link>
-            ))}
-          </div>
-        </div>
+        
       </div>
 
       <CreateCommunityModal 

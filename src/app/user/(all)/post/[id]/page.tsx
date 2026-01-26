@@ -171,8 +171,7 @@ export default function PostDetailPage() {
     </button>
   </div>
 </div>
-
-      {/* COMMENTS LIST */}
+{/* COMMENTS LIST */}
       <div className="space-y-4">
         <h3 className="text-sm font-bold text-[#838891] uppercase tracking-wider mb-4">Discussion</h3>
         {comments.length === 0 ? (
@@ -180,21 +179,28 @@ export default function PostDetailPage() {
             No comments yet. Be the first to share your thoughts.
           </div>
         ) : (
-          comments.map((c: any) => (
-            <div key={c.id} className="flex gap-4 p-4 bg-[#16181D] border border-[#1F2228] rounded-xl">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-900 to-[#1A1D23] flex-shrink-0 border border-[#2F333A] flex items-center justify-center text-xs font-bold text-blue-400">
-                {String(c.user_id).charAt(0).toUpperCase()}
-              </div>
-              <div className="flex flex-col flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-bold text-white">{post.display_name}</span>
-                  <span className="text-[10px] text-[#5c6066]">Today</span>
+          comments.map((c: any, index: number) => (
+            <React.Fragment key={c.id}>
+              <div className="flex gap-4 p-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-900 to-[#1A1D23] flex-shrink-0 border border-[#2F333A] flex items-center justify-center text-xs font-bold text-blue-400">
+                  {String(c.user_id).charAt(0).toUpperCase()}
                 </div>
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  {c.comment_text}
-                </p>
+                <div className="flex flex-col flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-bold text-white">{c.display_name}</span>
+                    <span className="text-[10px] text-[#5c6066]">Today</span>
+                  </div>
+                  <p className="text-sm text-gray-300 leading-relaxed">
+                    {c.comment_text}
+                  </p>
+                </div>
               </div>
-            </div>
+              
+              {/* THE LINE: Only renders if it's NOT the last comment */}
+              {index < comments.length - 1 && (
+                <div className="h-[1px] w-full bg-[#1F2228] mx-auto" />
+              )}
+            </React.Fragment>
           ))
         )}
       </div>
