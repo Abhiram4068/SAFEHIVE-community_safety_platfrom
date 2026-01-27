@@ -132,7 +132,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
               </div>
 
               <PostCard
-                display_name={post.display_name || `User_${post.user_id}`}
+                display_name={post.display_name}
                 time={new Date(post.created_at).toLocaleDateString()}
                 title={post.title}
                 content={post.caption}
@@ -144,10 +144,14 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
               
               <div className="flex items-center justify-between px-4 pb-4 -mt-2">
                 <div className="flex items-center gap-4">
-                  <button onClick={() => router.push(`/user/post/${post.id}/`)} className="flex items-center gap-1 text-sm text-[#838891] hover:text-blue-400 transition">
-                    <MessageSquare size={16} />
-                    <span>View Comments</span>
-                  </button>
+                 <button
+                                  onClick={() => router.push(`/user/post/${post.id}/`)}
+                                  className="flex items-center gap-1 text-[11px] font-bold uppercase text-[#838891] hover:text-white transition px-2 py-1 rounded-md"
+                                >
+                                    <MessageSquare size={16} />
+                                    <span>comments</span>
+                                  </button>
+                                 
 
                  
 

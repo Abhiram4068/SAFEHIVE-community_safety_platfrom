@@ -249,7 +249,7 @@ const filteredPosts = searchQuery.trim()
               title={post.title}
               content={post.caption}
               location={post.location_name || 'Global'}              
-              
+              fullContent={false}
               imageUrl={post.media?.[0]?.displayUrl || null}
               votes={post.vote_count || 0}
               accentColor={post.priority === "high" ? "bg-red-500" : "bg-blue-500"}

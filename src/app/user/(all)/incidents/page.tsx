@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, AlertCircle, Send, X, ChevronDown, Loader2, Layers } from 'lucide-react';
+import { 
+  Camera, 
+  AlertCircle, 
+  Send, 
+  X, 
+  ChevronDown, 
+  Loader2, 
+  Layers, 
+  Info // Added Info icon
+} from 'lucide-react';
 import axios from 'axios';
 
 interface Category {
@@ -29,12 +38,11 @@ export default function ReportIncident() {
     category_id: ""      
   });
 
-  // 1. Load Main Categories on mount
+  // Load Main Categories on mount
   useEffect(() => {
     async function fetchMainCategories() {
       try {
         const response = await axios.get('http://127.0.0.1:8002/api/categories/');
-        // Only keep categories that have no parent (Main Categories)
         const mains = response.data.filter((cat: Category) => !cat.parent);
         setMainCategories(mains);
       } catch (error) {
@@ -44,13 +52,10 @@ export default function ReportIncident() {
     fetchMainCategories();
   }, []);
 
-  // 2. Fetch Sub-Categories when Main Category is chosen
   const handleMainCategoryChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedMainId = e.target.value;
-
-    // Reset sub-category and set the new main category ID
     setFormData(prev => ({ ...prev, main_category_id: selectedMainId, category_id: "" }));
-    setSubCategories([]); // Clear old list immediately
+    setSubCategories([]);
 
     if (!selectedMainId) return;
 
@@ -93,16 +98,15 @@ export default function ReportIncident() {
       try {
         setUploadStatus("Creating report...");
         
-       const postPayload = {
-  title: formData.title,
-  caption: formData.caption,
-  // Sending both IDs to the backend
-  category_id: parseInt(formData.main_category_id), // The Parent
-  subcategory_id: parseInt(formData.category_id),  // The specific issue
-  latitude: position.coords.latitude,
-  longitude: position.coords.longitude,
-  priority: "medium" 
-};
+        const postPayload = {
+          title: formData.title,
+          caption: formData.caption,
+          category_id: parseInt(formData.main_category_id),
+          subcategory_id: parseInt(formData.category_id),
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          priority: "medium" 
+        };
 
         const postResponse = await axios.post('/api/post', postPayload);
         const newPostId = postResponse.data.id;
@@ -152,9 +156,30 @@ export default function ReportIncident() {
 
       <div className="bg-[#15191C] border border-[#2D2F34] rounded p-6 flex flex-col gap-6 shadow-2xl">
         
+       {/* IMPORTANT NOTICE BOX */}
+        <div className="bg-[#1A1D23] border-l-4 border-red-500 p-4 rounded-r-md">
+          <div className="flex items-center gap-2 mb-2">
+            <Info className="w-4 h-4 text-red-500" />
+            <span className="text-xs font-bold text-white uppercase tracking-widest">Important Notice</span>
+          </div>
+          <ul className="text-[13px] text-[#838891] space-y-1.5 leading-relaxed ml-4">
+            <li className="flex items-start gap-2">
+              <span className="text-red-500 mt-1">●</span> 
+              This is a community-based platform; please post only relevant incidents.
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-red-500 mt-1">●</span> 
+              If a report is found to be irrelevant or false, administrators have full access to remove the post.
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-red-500 mt-1">●</span> 
+              Ensure you are providing accurate details to assist emergency responders.
+            </li>
+          </ul>
+        </div>
+
         {/* CATEGORY PICKER SECTION */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Main Category */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-[#838891] uppercase tracking-wider flex items-center gap-2">
               <Layers size={12} className="text-blue-500" /> 01. General Category
@@ -174,7 +199,6 @@ export default function ReportIncident() {
             </div>
           </div>
 
-          {/* Sub Category */}
           <div className="space-y-2">
             <label className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-2 transition-colors ${!formData.main_category_id ? 'text-gray-700' : 'text-[#838891]'}`}>
                02. Specific Issue

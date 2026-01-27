@@ -21,9 +21,15 @@ export default function NearMe() {
     try {
       const res = await axios.patch(`/api/post/${postId}/helpful/`);
       const { helpful, helpful_count } = res.data;
-      setPosts((prev) =>
+       setPosts((prev) =>
         prev.map((p) =>
-          p.id === postId ? { ...p, is_helpful: helpful, helpful_count: helpful_count } : p
+          p.id === postId
+            ? {
+                ...p,
+                is_helpful: helpful,
+                helpful_count: helpful_count,
+              }
+            : p
         )
       );
     } catch (err) {
@@ -101,7 +107,7 @@ const filteredPosts = searchQuery.trim()
     )
   : posts;
   return (
-    <div className="flex-1 w-full lg:max-w-2xl mx-auto pb-10 px-4 bg-[#0D0F12] min-h-screen text-white">
+    <div className="flex-1 w-full lg:max-w-2xl mx-auto pb-10 px-4 bg-[#0D0F12 min-h-screen text-white">
       {!hasPermission && !loading && (
         <div className="flex flex-col items-center justify-center py-20 text-center border border-[#1F2228] rounded-xl bg-[#1A1D23] mt-10 px-6">
           <div className="bg-[#2D333B] p-4 rounded-full mb-4">
@@ -179,13 +185,13 @@ const filteredPosts = searchQuery.trim()
                     <span>View Comments</span>
                   </button>
 
-                  <button 
-                    onClick={() => handleHelpful(post.id)}
-                    className={`flex items-center gap-1 text-sm transition ${post.is_helpful ? "text-green-500" : "text-[#838891] hover:text-green-400"}`}
-                  >
-                    <CheckCircle size={16} fill={post.is_helpful ? "currentColor" : "none"} fillOpacity={0.2} />
-                    <span>Helpful ({post.helpful_count || 0})</span>
-                  </button>
+                    <button 
+                                   onClick={() => handleHelpful(post.id)}
+                                   className={`flex items-center gap-1 text-sm transition ${post.is_helpful ? "text-green-500" : "text-[#838891] hover:text-green-400"}`}
+                                 >
+                                   <CheckCircle size={16} fill={post.is_helpful ? "currentColor" : "none"} fillOpacity={0.2} />
+                                   <span>Helpful</span>
+                                 </button>
 
                   <button 
                     onClick={() => handleSave(post.id)}

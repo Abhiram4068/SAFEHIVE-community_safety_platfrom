@@ -65,13 +65,16 @@ export default async function MyCommunities() {
             </div>
 
             {/* EMPTY STATE */}
-            {communities.length === 0 && (
-                <div className="text-center py-20 text-[#838891] border border-dashed border-[#2D2F34] rounded-xl mt-4">
-                    {access 
-                        ? "No communities found. Be the first to create one!" 
-                        : "Please log in to see your communities."}
-                </div>
-            )}
+           {communities.length === 0 && (
+  <Link href="/user/communities">
+    <div className="text-center py-20 text-[#838891] border border-dashed border-[#2D2F34] rounded-xl mt-4
+                    cursor-pointer hover:bg-[#1A1D23] hover:text-white transition">
+      {access
+        ? "No communities found. Join one!"
+        : "Please log in to see your communities."}
+    </div>
+  </Link>
+)}
         </div>
     );
 }

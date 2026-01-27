@@ -124,6 +124,7 @@ export default function PostDetailPage() {
           latitude={post.latitude}
           longitude={post.longitude}
           locationdistance="" 
+          fullContent={true}
           imageUrl={post.media?.[0]?.displayUrl || null}
           accentColor={post.priority === "high" ? "bg-red-500" : "bg-blue-500"}
         />
