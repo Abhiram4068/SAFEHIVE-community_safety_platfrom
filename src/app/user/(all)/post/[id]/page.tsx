@@ -188,7 +188,14 @@ export default function PostDetailPage() {
                 <div className="flex flex-col flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-bold text-white">{c.display_name}</span>
-                    <span className="text-[10px] text-[#5c6066]">Today</span>
+               <span className="text-[10px] text-[#5c6066]">
+  {new Date(c.created_at).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+
+  })}
+</span>
                   </div>
                   <p className="text-sm text-gray-300 leading-relaxed">
                     {c.comment_text}
@@ -197,9 +204,9 @@ export default function PostDetailPage() {
               </div>
               
               {/* THE LINE: Only renders if it's NOT the last comment */}
-              {index < comments.length - 1 && (
+              {/* {index < comments.length - 1 && (
                 <div className="h-[1px] w-full bg-[#1F2228] mx-auto" />
-              )}
+              )} */}
             </React.Fragment>
           ))
         )}

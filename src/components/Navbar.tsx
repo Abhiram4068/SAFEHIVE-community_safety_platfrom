@@ -51,23 +51,23 @@ export const Navbar = ({ user }: NavbarProps) => {
             <div className="flex items-center gap-2 md:gap-4">
               
               {/* MESSAGES TAB - Visible only when logged in */}
-              <Link
+              {/* <Link
                 href="/user/messages"
                 className="flex items-center gap-2 px-3 py-1.5 text-[#838891] hover:text-white hover:bg-[#1F2228] rounded-full transition-all group"
-              >
+              > */}
                 {/* <div className="relative">
                   <Mail size={20} className="group-hover:scale-110 transition-transform" />
                   
                   <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-orange-600 rounded-full border-2 border-[#0B0D10]" />
                 </div> */}
                 {/* <span className=" sm:block text-sm font-medium">Inbox</span> */}
-              </Link>
+              {/* </Link> */}
 
               {/* Profile Dropdown */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className={`flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full transition-all duration-200 border ${
+                  className={`flex items-center gap-3 pl-2 pr-3 py-1.5 rounded transition-all duration-200  ${
                     isOpen 
                       ? 'bg-[#1F2228] border-[#343942]' 
                       : 'bg-transparent border-transparent hover:bg-[#1F2228] hover:border-[#2A2E36]'
@@ -84,20 +84,19 @@ export const Navbar = ({ user }: NavbarProps) => {
                 </button>
 
                 {isOpen && (
-                  <div className="absolute right-0 mt-3 w-64 bg-[#16181D] border border-[#2A2E36] rounded-2xl shadow-2xl py-2 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="absolute right-0 mt-3 w-64 bg-[#16181D] border border-[#2A2E36] rounded shadow-2xl py-2 animate-in fade-in zoom-in-95 duration-100">
                     <div className="px-4 py-3 border-b border-[#2A2E36] mb-2">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Account</p>
                     </div>
                     
                     <DropdownLink href={`/user/userprofile/`} icon={<User size={18} />} label="My Profile" />
-                    <DropdownLink href="/dashboard" icon={<LayoutDashboard size={18} />} label="Dashboard" />
-                    <DropdownLink href="/settings" icon={<Settings size={18} />} label="Settings" />
+                  
                     
                     {user.role === 'admin' && (
                       <DropdownLink href="/admin" icon={<ShieldCheck size={18} className="text-orange-500" />} label="Admin Panel" />
                     )}
 
-                    <div className="h-[1px] bg-[#2A2E36] my-2 mx-2" />
+                    
 
                     <form action="/logout" method="POST" className="px-2">
                       <button

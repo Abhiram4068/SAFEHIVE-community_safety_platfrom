@@ -153,7 +153,10 @@ export default function Home() {
           posts.map((post) => (
             <div key={post.id} className="relative border border-[#1F2228] rounded-xl overflow-hidden bg-[#16181D]">
               <div className="absolute top-4 right-4 z-10">
-                <button onClick={() => setSelectedPost(post)} className="flex items-center gap-1 text-[11px] font-bold uppercase text-[#838891] hover:text-white transition bg-black/40 px-2 py-1 rounded-md">
+                  <button
+                  onClick={() => router.push(`/user/post/${post.id}/`)}
+                  className="flex items-center gap-1 text-[11px] font-bold uppercase text-[#838891] hover:text-white transition bg-black/40 px-2 py-1 rounded-md"
+                >
                   inspect <ExternalLink size={12} />
                 </button>
               </div>

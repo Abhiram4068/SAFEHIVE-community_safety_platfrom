@@ -106,8 +106,8 @@ const EditProfilePage = () => {
   // Loading UI
   if (isLoading) {
     return (
-      <div className="w-full h-screen bg-black flex flex-col items-center justify-center text-white">
-        <Loader2 className="animate-spin mb-4 text-orange-500" size={40} />
+      <div className="p-10 text-white flex justify-center">
+       
         <p className="italic text-gray-400">Fetching your profile...</p>
       </div>
     );
@@ -119,7 +119,7 @@ const EditProfilePage = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
-            <Link href="/user/userprofile" className="p-2 hover:bg-[#1A1C1E] rounded-full transition-colors border border-[#1F2228]">
+            <Link href="/user/userprofile" className="p-2 hover:bg-[#1A1C1E]  transition-colors ]">
               <ArrowLeft size={20} />
             </Link>
             <h1 className="text-xl font-bold uppercase tracking-widest">Edit Profile</h1>
@@ -127,11 +127,11 @@ const EditProfilePage = () => {
         </div>
 
         {/* Form Card */}
-        <div className="bg-[#0B0D10] border border-[#1F2228] rounded-2xl overflow-hidden shadow-2xl">
+        <div className="bg-[#0B0D10] border border-[#1F2228] rounded overflow-hidden shadow-2xl">
           {/* Banner Color Selector */}
           <div className="h-40 w-full relative group transition-colors duration-500" style={{ backgroundColor: formData.banner_color }}>
              <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
-                <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-full border border-white/20">
+                <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded border border-white/20">
                     <Palette size={16} /><span className="text-xs font-bold uppercase">Change Color</span>
                 </div>
                 <input type="color" className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" value={formData.banner_color} onChange={handleColorChange} />
@@ -142,14 +142,14 @@ const EditProfilePage = () => {
             {/* Profile Image & Save Button Row */}
             <div className="flex justify-between items-end -mt-12 mb-8">
               <div className="relative group w-32 h-32">
-                <div className="w-full h-full bg-[#1A1A1B] rounded-3xl border-[6px] border-[#0B0D10] shadow-2xl overflow-hidden relative">
+                <div className="w-full h-full bg-[#1A1A1B] rounded-xl border-[6px] border-[#0B0D10] shadow-2xl overflow-hidden relative">
                     {previewUrl ? (
                       <img src={previewUrl} alt="avatar" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-tr from-orange-500 to-yellow-400" />
                     )}
                 </div>
-                <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-3xl opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
                     <Camera size={24} />
                     <span className="text-[10px] font-black uppercase mt-1">Upload</span>
                     <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
@@ -160,7 +160,7 @@ const EditProfilePage = () => {
                 <button 
                   disabled={isSaving} 
                   onClick={handleSave} 
-                  className="flex items-center gap-2 bg-orange-600 text-white font-bold px-6 py-2 rounded-full text-sm hover:bg-orange-700 transition-colors disabled:opacity-50 min-w-[140px] justify-center shadow-lg shadow-orange-900/20"
+                  className="flex items-center gap-2 bg-orange-600 text-white font-bold px-6 py-2 rounded-2xl text-sm hover:bg-orange-700 transition-colors disabled:opacity-50 min-w-[140px] justify-center shadow-lg shadow-orange-900/20"
                 >
                   {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                   {isSaving ? "Saving..." : "Save Changes"}
@@ -179,7 +179,7 @@ const EditProfilePage = () => {
                     placeholder="Your new display name" 
                     value={formData.display_name} 
                     onChange={handleChange} 
-                    className="w-full bg-[#16191D] border border-[#1F2228] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors" 
+                    className="w-full bg-[#16191D] border border-[#1F2228] rounded px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors" 
                   />
                 </div>
                 <div className="space-y-2">
@@ -190,14 +190,14 @@ const EditProfilePage = () => {
                     placeholder="Tell us about yourself" 
                     value={formData.bio} 
                     onChange={handleChange} 
-                    className="w-full bg-[#16191D] border border-[#1F2228] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors resize-none" 
+                    className="w-full bg-[#16191D] border border-[#1F2228] rounded px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors resize-none" 
                   />
                   <p className="text-[10px] text-gray-600 text-right font-bold uppercase">{formData.bio.length} / 160</p>
                 </div>
               </div>
 
               {/* Guidelines Sidebar */}
-              <div className="bg-[#16191D]/50 border border-[#1F2228] rounded-2xl p-6 border-l-orange-600/50 border-l-2 h-fit">
+              <div className="bg-[#16191D]/50 border border-[#1F2228] rounded p-6 border-l-orange-600/50 border-l-2 h-fit">
                 <div className="flex items-center gap-2 mb-4 text-[11px] font-black text-orange-500 uppercase tracking-widest">
                   <ShieldCheck size={14} /><span>Profile Guidelines</span>
                 </div>
@@ -209,24 +209,13 @@ const EditProfilePage = () => {
               </div>
             </div>
             
-            {/* Danger Zone */}
-            <div className="mt-12 pt-8 border-t border-[#1F2228] space-y-4">
-                <h3 className="text-[10px] font-black uppercase text-red-500/80">Danger Zone</h3>
-                <div className="flex flex-wrap gap-4">
-                  <button onClick={() => setShowDisableModal(true)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#1F2228] text-xs font-bold text-gray-400 hover:text-orange-500 hover:border-orange-500/50 transition-all">
-                    <Power size={14} /> Disable Account
-                  </button>
-                  <button onClick={() => setShowDeleteModal(true)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#1F2228] text-xs font-bold text-gray-400 hover:text-red-500 hover:border-red-500/50 transition-all">
-                    <Trash2 size={14} /> Delete Account
-                  </button>
-                </div>
-            </div>
+            
           </div>
         </div>
       </div>
 
       {/* Modals */}
-      {(showDisableModal || showDeleteModal) && (
+      {/* {(showDisableModal || showDeleteModal) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-[#0B0D10] border border-[#1F2228] w-full max-w-md rounded-2xl p-6 shadow-2xl text-white">
             <h2 className="text-xl font-bold mb-2">{showDeleteModal ? "Delete Account" : "Disable Account"}</h2>
@@ -243,7 +232,7 @@ const EditProfilePage = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

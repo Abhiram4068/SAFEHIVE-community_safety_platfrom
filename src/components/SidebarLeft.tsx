@@ -84,10 +84,12 @@ export const Sidebar = ({ user }: SidebarProps) => {
     }
   }
 
-  useEffect(() => {
+useEffect(() => {
+  if (user) {
     fetchCommunities();
-    fetchCategories();
-  }, []);
+  }
+  fetchCategories();
+}, [user]);
 
   return (
     <aside className="hidden md:block w-64 pr-4 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-[#1F2228] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -175,7 +177,7 @@ export const Sidebar = ({ user }: SidebarProps) => {
           
           {/* Explore Categories Link */}
           <Link
-            href="/categories"
+            href={user ? "/user/categories" : "/categories"}
             className="flex items-center justify-between px-3 py-2 mt-2 text-[#838891] hover:text-white transition-colors text-xs font-bold uppercase tracking-tight group"
           >
             Explore all categories

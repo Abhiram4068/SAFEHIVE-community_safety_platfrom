@@ -9,24 +9,27 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-       <div className="bg-[#0B0D10] text-[#D1D5DB] min-h-screen antialiased">
-         <Navbar />
-         
-         {/* CHANGE: Added 'px-6' (or 'px-10' for more space) to the main tag.
-             This pushes both sidebars away from the very edges of the screen/container.
-         */}
-         <main className="max-w-[1600px] w-full mx-auto flex pt-4 px-18 border-x border-[#1F2228]">
-           
-           {/* Left Sidebar */}
-           <Sidebar />
+    <div className="bg-[#0B0D10] text-[#D1D5DB] min-h-screen antialiased">
+      <Navbar />
 
-           {children}
-           {/* Right Sidebar */}
-           <RightSidebar />
-           
-         </main>
-       </div>
+      <main className="max-w-[1600px] w-full mx-auto flex justify-center pt-4 px-4 sm:px-6 lg:px-18 gap-6">
+        
+        {/* Left Sidebar */}
+        <div className="hidden lg:block w-[280px] shrink-0">
+          <Sidebar  />
+        </div>
 
+        {/* Middle */}
+        <section className="flex-1 max-w-[740px] min-w-0 pb-10">
+          {children}
+        </section>
 
+        {/* Right Sidebar */}
+        <div className="hidden xl:block w-[320px] shrink-0">
+          <RightSidebar />
+        </div>
+
+      </main>
+    </div>
   );
 }

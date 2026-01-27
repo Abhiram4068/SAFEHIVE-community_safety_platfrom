@@ -129,16 +129,7 @@ export default function AnnouncementsListPage() {
                 </span>
               </button>
 
-              {/* ENQUIRE BUTTON: Only shows if the current user is NOT the author */}
-             {!post.is_owner && (
-  <Link
-    href={`/user/messages/new?announcementId=${post.id}`}
-    className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[#838891] hover:text-white hover:bg-[#2D2F34] transition"
-  >
-    <MessageCircle className="w-4 h-4" />
-    <span className="text-xs font-bold">Enquire</span>
-  </Link>
-)}
+
             </div>
           </article>
         ))}
