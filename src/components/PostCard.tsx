@@ -16,6 +16,7 @@ interface PostProps {
   imageUrl?: string;
   accentColor: string;
   is_owner?: boolean; 
+    fullContent?: boolean;
   onDelete?: () => void; 
 }
 
@@ -27,6 +28,7 @@ export const PostCard = ({
   longitude,
   title, 
   content, 
+  fullContent = false,
   imageUrl, 
   accentColor,
   is_owner,
@@ -41,8 +43,7 @@ export const PostCard = ({
           <div className="flex justify-between items-start mb-2">
             {/* Header Info */}
             <div className="flex items-center flex-wrap gap-2 text-xs text-[#838891]">
-              <div className={`w-5 h-5 rounded-full border border-[#1F2228] ${accentColor}`}></div>
-   
+   <span>•</span>
               <span>Posted by u/<span className="font-bold text-gray-300">{display_name || "anonymous"}</span></span>
               <span>•</span>
               <span>{time}</span>
@@ -77,7 +78,15 @@ export const PostCard = ({
           )}
 
           <h2 className="text-lg font-semibold text-gray-100 mb-3">{title}</h2>
-          {content && <p className="text-sm text-gray-300 mb-3 line-clamp-3">{content}</p>}
+         {content && (
+  <p
+    className={`text-sm text-gray-300 mb-3 leading-relaxed ${
+      fullContent ? "" : "line-clamp-3"
+    }`}
+  >
+    {content}
+  </p>
+)}
         </div>
       </article>
 

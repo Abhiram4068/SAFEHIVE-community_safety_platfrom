@@ -23,7 +23,7 @@ export default function CommunityCenter({ params }: { params: Promise<{ slug: st
   const router = useRouter();
   // Data States
   const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [posts, setPosts] = useState<any[]>([]); // Added type any[]
+  const [posts, setPosts] = useState<any[]>([]); 
   const [members, setMembers] = useState<any[]>([]); 
   const [groupData, setGroupData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -59,11 +59,19 @@ export default function CommunityCenter({ params }: { params: Promise<{ slug: st
         ]);
         setGroupData(groupRes.data);
         setPosts(postsRes.data);
-        setMembers(
-          Array.isArray(membersRes.data)
-            ? membersRes.data
-            : membersRes.data.results || []
-        );
+        
+        // Process members to ensure Admin is first
+        const rawMembers = Array.isArray(membersRes.data)
+          ? membersRes.data
+          : membersRes.data.results || [];
+        
+        const sortedMembers = [...rawMembers].sort((a, b) => {
+            if (a.role?.toLowerCase() === 'admin') return -1;
+            if (b.role?.toLowerCase() === 'admin') return 1;
+            return 0;
+        });
+
+        setMembers(sortedMembers);
         setAnnouncements(announcementsRes.data || []);
         
         setIsJoined(groupRes.data.is_member || false);
@@ -81,12 +89,12 @@ export default function CommunityCenter({ params }: { params: Promise<{ slug: st
 const handleDeleteAnnouncement = async (annId: number) => {
   try {
     await axios.delete(`/api/community/announcements/${annId}/delete/`);
-    // Update local state to remove the announcement from UI immediately
     setAnnouncements((prev) => prev.filter((ann) => ann.id !== annId));
   } catch (err) {
     alert("Failed to delete announcement");
   }
 };
+
   const handleDeletePost = async (postId: number) => {
     try {
       await axios.delete(`/api/community/posts/${postId}/delete/`);
@@ -155,7 +163,7 @@ const handleDeleteAnnouncement = async (annId: number) => {
   return (
     <div className="flex-1 bg-black min-h-screen pb-10">
       
-      {/* --- JOIN MODAL --- */}
+      {/* --- MODALS (Join, Leave, Dismantle, Delete Post) --- */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !isJoining && setIsModalOpen(false)} />
@@ -182,7 +190,6 @@ const handleDeleteAnnouncement = async (annId: number) => {
         </div>
       )}
 
-      {/* --- LEAVE MODAL --- */}
       {isLeaveModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsLeaveModalOpen(false)} />
@@ -198,7 +205,6 @@ const handleDeleteAnnouncement = async (annId: number) => {
         </div>
       )}
 
-      {/* --- DISMANTLE MODAL --- */}
       {isDismantleModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => !isDismantling && setIsDismantleModalOpen(false)} />
@@ -218,7 +224,6 @@ const handleDeleteAnnouncement = async (annId: number) => {
         </div>
       )}
 
-      {/* --- DELETE POST MODAL --- */}
       {isDeletePostModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsDeletePostModalOpen(false)} />
@@ -338,8 +343,6 @@ const handleDeleteAnnouncement = async (annId: number) => {
                       <span className="text-xs text-[#818384] font-medium bg-[#1A1D23] px-2 py-1 rounded">
                         {new Date(ann.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       </span>
-                      
-                      {/* DELETE OPTION FOR OWNER */}
                       {ann.is_owner && (
                         <button 
                           onClick={() => {
@@ -360,9 +363,8 @@ const handleDeleteAnnouncement = async (annId: number) => {
           )}
           {activeTab === 'announcements' && (
             <div className="space-y-4">
-              {/* Professional Admin Notice */}
-              <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 flex gap-3 items-start">
-                <div className="bg-blue-500/10 p-2 rounded-lg">
+              <div className=" p-4 flex gap-3 items-start">
+                <div className=" p-2 ">
                   <Bell className="text-blue-500 w-5 h-5" />
                 </div>
                 <div>
@@ -373,17 +375,13 @@ const handleDeleteAnnouncement = async (annId: number) => {
                 </div>
               </div>
 
-              {/* Announcements List */}
              {announcements.length > 0 ? (
   announcements.map((ann: any) => (
     <div
       key={ann.id}
       className="bg-[#0B0D10] border border-[#343536] rounded-xl p-5 hover:border-[#4a4c4d] transition-colors group"
     >
-      {/* Container for the whole header row */}
       <div className="flex items-center justify-between mb-3">
-        
-        {/* Left Side: Icon and Title Info */}
         <div className="flex items-center gap-3">
           <span className="bg-blue-500/10 text-blue-500 p-1.5 rounded-lg group-hover:bg-blue-500 group-hover:text-white transition-all">
             <Bell size={16} />
@@ -396,7 +394,6 @@ const handleDeleteAnnouncement = async (annId: number) => {
           </div>
         </div>
 
-        {/* Right Side: Date and Delete button grouped tightly */}
         <div className="flex items-center gap-4"> 
           <span className="text-xs text-[#818384] font-medium bg-[#1A1D23] px-3 py-1 rounded">
             {new Date(ann.created_at).toLocaleDateString(undefined, {
@@ -420,12 +417,10 @@ const handleDeleteAnnouncement = async (annId: number) => {
         </div>
       </div>
 
-      {/* Content */}
       <p className="text-[#D7DADC] text-sm leading-relaxed whitespace-pre-wrap pl-1">
         {ann.content}
       </p>
 
-      {/* Footer */}
       <div className="mt-4 pt-3 border-t border-[#1A1A1B] flex items-center">
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
@@ -446,13 +441,27 @@ const handleDeleteAnnouncement = async (annId: number) => {
           )}
 
           {activeTab === 'members' && (
-            <div className="bg-[#0B0D10] border border-[#343536] rounded-xl overflow-hidden divide-y divide-[#1A1A1B]">
-              {members.map((member: any) => (
-                <div key={member.id} className="p-4 flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">{member.display_name?.charAt(0)}</div>
-                    <div><p className="text-white font-bold text-sm">{member.display_name}</p><p className="text-[#818384] text-xs">{member.role}</p></div>
-                  </div>
+            <div className="space-y-0">
+              {members.map((member: any, index: number) => (
+                <div key={member.id}>
+                    <div className="py-4 flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${member.role?.toLowerCase() === 'admin' ? 'bg-emerald-600' : 'bg-[#343536]'}`}>
+                            {member.display_name?.charAt(0)}
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <p className="text-white font-bold text-sm">{member.display_name}</p>
+                                
+                            </div>
+                            <p className="text-[#818384] text-xs capitalize">{member.role}</p>
+                        </div>
+                    </div>
+                    </div>
+                    {/* Add horizontal line after every member except the last one */}
+                    {index < members.length - 1 && (
+                        <div className="h-[1px] bg-[#1A1A1B] w-full" />
+                    )}
                 </div>
               ))}
             </div>

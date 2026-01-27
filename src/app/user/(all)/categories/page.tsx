@@ -78,8 +78,8 @@ const filteredCategories = categories
       </div><br></br>
 
       {/* Explore Header */}
-      <div className="bg-[#15191C] border border-[#2D2F34] rounded-xl p-6 mb-8 flex items-center gap-4">
-        <div className="p-3 bg-[#1F2228] rounded-full">
+      <div className=" p-6 mb-8 flex items-center gap-4">
+        <div className="p-3 ">
           <Compass className="text-[#838891] w-8 h-8" />
         </div>
         <h1 className="text-white text-2xl font-bold">Explore Categories</h1>

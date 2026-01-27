@@ -121,17 +121,7 @@ export default function Home() {
 
   return (
     <div className="flex-1 w-full lg:max-w-2xl mx-auto pb-10 px-4 bg-[#0D0F12] min-h-screen text-white">
-      {/* Search Header */}
-      <div className="flex justify-center mb-8 mt-4">
-        <div className="relative w-full max-w-xl">
-          <Search className="absolute left-3 top-2.5 h-5 w-5 text-[#838891]" />
-          <input
-            type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none sm:text-sm"
-            placeholder="Search SafeHive"
-          />
-        </div>
-      </div>
+     
       <div className={`max-w-xl mx-auto mb-8 px-2 text-center ${montserrat.className}`}>
         <p className="text-[#838891] text-sm tracking-wide">
           You are seeing all reported issues.{" "}
@@ -164,13 +154,13 @@ export default function Home() {
               <PostCard
                 id={post.id}
                 subreddit={post.category_name || "Community"}
-                display_name={`User_${post.user_id}`}
+                display_name={`${post.display_name}`}
                 time={new Date(post.created_at).toLocaleDateString()}
                 title={post.title}
+                location={post.location_name}
                 content={post.caption}
                 imageUrl={post.media?.[0]?.displayUrl || null}
                 votes={post.vote_count || 0}
-                commentsCount={post.comment_count || 0}
                 accentColor={post.priority === "high" ? "bg-red-500" : "bg-blue-500"}
               />
               
@@ -178,21 +168,18 @@ export default function Home() {
                 
                 <div className="flex items-center gap-4">
                                   {/* Comment Button Added Here */}
-                  <button onClick={() => setSelectedPost(post)} className="flex items-center gap-1 text-sm text-[#838891] hover:text-blue-400 transition">
+                      <button
+                  onClick={() => router.push(`/user/post/${post.id}/`)}
+                  className="flex items-center gap-1 text-[11px] font-bold uppercase text-[#838891] hover:text-white transition px-2 py-1 rounded-md"
+                >
                     <MessageSquare size={16} />
-                    <span>{post.comment_count}Comment</span>
+                    <span>comments</span>
                   </button>
-                  <button onClick={() => handleHelpful(post.id)} className={`flex items-center gap-1 text-sm transition ${post.is_helpful ? "text-green-500" : "text-[#838891] hover:text-green-400"}`}>
-                    <CheckCircle size={16} fill={post.is_helpful ? "currentColor" : "none"} fillOpacity={0.2} />
-                    <span>Helpful</span>
-                  </button>
+                 
 
   
 
-                  <button onClick={() => handleSave(post.id)} className={`flex items-center gap-1 text-sm transition ${post.is_saved ? "text-yellow-500" : "text-[#838891] hover:text-yellow-400"}`}>
-                    <Bookmark size={16} fill={post.is_saved ? "currentColor" : "none"} />
-                    <span>{post.is_saved ? "Saved" : "Save"}</span>
-                  </button>
+                 
                 </div>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
-import { MoreHorizontal, Plus, Search, Share2, Bookmark, Flag, Home } from 'lucide-react';
+import { MoreHorizontal, Plus, Share2, Bookmark, Flag, Home } from 'lucide-react';
 
 type AnnouncementType = {
   id: number;
@@ -36,14 +36,10 @@ export default function AnnouncementsListPage() {
       {/* SEARCH AND NAVIGATION HEADER */}
       <div className="flex flex-col md:flex-row items-center gap-4 mb-8 pt-4">
         <div className="relative flex-1 w-full">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-[#838891]" />
-          </div>
-          <input 
-            type="text" 
-            className="block w-full pl-10 pr-3 py-2 border border-[#1F2228] rounded-full bg-[#1A1D23] text-gray-300 placeholder-[#838891] focus:outline-none focus:border-gray-500 sm:text-sm" 
-            placeholder="Search Announcements" 
-          />
+          <div className="flex items-center gap-2 px-2">
+          <span className="text-xl">📢</span>
+          <h2 className="text-white text-lg font-bold">Recent Announcements</h2>
+        </div>
         </div>
 
         <Link 
@@ -55,13 +51,7 @@ export default function AnnouncementsListPage() {
         </Link>
       </div>
 
-      <section className="mb-6">
-        <div className="flex items-center gap-2 px-2">
-          <span className="text-xl">📢</span>
-          <h2 className="text-white text-lg font-bold">Recent Announcements</h2>
-        </div>
-      </section>
-
+     
       <div className="space-y-6">
         {announcements.map((post) => (
           <article key={post.id} className="bg-[#15191C] border border-[#2D2F34] rounded-xl p-6 shadow-sm hover:border-[#3d3f44] transition">
@@ -84,20 +74,7 @@ export default function AnnouncementsListPage() {
               <div className="text-[#E4E6EB] text-[15px] leading-relaxed whitespace-pre-wrap">{post.content}</div>
             </div>
 
-            <div className="flex items-center gap-1 mt-6 pt-2 border-t border-[#2D2F34]">
-              <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
-                <Share2 className="w-4 h-4 group-hover:text-white" />
-                <span className="text-xs font-bold group-hover:text-white">Share</span>
-              </button>
-              <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
-                <Bookmark className="w-4 h-4 group-hover:text-white" />
-                <span className="text-xs font-bold group-hover:text-white">Save</span>
-              </button>
-              <button className="flex items-center gap-2 px-3 py-2 hover:bg-[#2D2F34] rounded-md text-[#838891] transition group">
-                <Flag className="w-4 h-4 group-hover:text-red-400" />
-                <span className="text-xs font-bold group-hover:text-red-400">Flag</span>
-              </button>
-            </div>
+            
           </article>
         ))}
 
